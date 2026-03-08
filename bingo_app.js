@@ -234,6 +234,32 @@ function generarTarjeta() {
   document.getElementById('previewArea').scrollIntoView({behavior:'smooth'});
 }
 
+// ── GUARDAR IMAGEN ──
+function guardarImagen() {
+  const preview = document.getElementById('previewArea');
+  if (!preview || preview.style.display === 'none') {
+    showError('Primero generá una tarjeta.'); return;
+  }
+  const wrapper = document.getElementById('cardWrapper');
+  const btn = event.currentTarget;
+  btn.disabled = true;
+  btn.textContent = '⏳ Guardando...';
+  html2canvas(wrapper, {
+    useCORS: true,
+    scale: 2,
+    backgroundColor: null,
+    logging: false
+  }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'bingo-tarjeta.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }).finally(() => {
+    btn.disabled = false;
+    btn.textContent = '💾 Guardar imagen';
+  });
+}
+
 // ── INIT ──
 window.onload = () => {
   try {
