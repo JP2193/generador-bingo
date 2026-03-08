@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Bingo — Clara & Javier</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="bingo_style.css">
+</head>
+<body>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('generate')">✦ Generar</button>
+  <button class="tab-btn" onclick="switchTab('calibrate')">⚙ Calibrar</button>
+</div>
+
+<!-- ══════════════ TAB: GENERAR ══════════════ -->
+<div id="tab-generate" class="tab-content active">
+
+  <div class="card">
+    <h2>Paso 1 · Frases</h2>
+    <input type="file" id="excelInput" accept=".xlsx" style="display:none" onchange="cargarExcel(this)">
+    <button class="btn btn-outline" onclick="document.getElementById('excelInput').click()">📂 Cargar frases desde Excel</button>
+    <div id="excelResumen" style="margin-top:10px; font-size:0.82rem; color:#155724; background:#d4edda; border-radius:8px; padding:9px 13px; display:none;"></div>
+    <div id="excelError"   style="margin-top:10px; font-size:0.82rem; color:#842029; background:#f8d7da; border-radius:8px; padding:9px 13px; display:none;"></div>
+  </div>
+
+  <div class="card">
+    <h2>Paso 2 · Distribución (deben sumar 24)</h2>
+    <div class="dist-row">
+      <div class="dist-item"><label>🟢 Fáciles</label><input type="number" id="nFacil" value="14" min="0" max="24"></div>
+      <div class="dist-item"><label>🟡 Medias</label><input type="number" id="nMedia" value="7" min="0" max="24"></div>
+      <div class="dist-item"><label>🔴 Difíciles</label><input type="number" id="nDificil" value="3" min="0" max="24"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="generarTarjeta()">✦ Generar tarjeta</button>
+      <button class="btn btn-outline" onclick="generarTarjeta()">↺ Otra aleatoria</button>
+      <button class="btn btn-gold"    onclick="window.print()">🖨 Imprimir</button>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <div id="previewArea" style="display:none">
+    <div class="card-wrapper" id="cardWrapper">
+      <img class="card-bg" src="img/2.png" alt="fondo tarjeta">
+      <div class="grid-overlay" id="gridOverlay"></div>
+    </div>
+  </div>
+
+</div><!-- /tab-generate -->
+
+<!-- ══════════════ TAB: CALIBRAR ══════════════ -->
+<div id="tab-calibrate" class="tab-content">
+
+  <div class="card">
+    <h2>Calibrar posición de la grilla <span class="saved-badge" id="savedBadge" style="display:none">✓ Guardado</span></h2>
+    <p style="font-size:0.75rem; color:#999; margin-bottom:14px;">Ajustá los sliders hasta que la grilla roja coincida con el área de celdas. Guardá y los valores se usan en el modo Generar.</p>
+
+    <div class="calib-layout">
+      <div class="calib-controls">
+
+        <div class="slider-group">
+          <label>top (%) <span id="dTop">29.5</span>%</label>
+          <input type="range" id="cTop" min="15" max="50" step="0.1" value="29.5">
+        </div>
+        <div class="slider-group">
+          <label>left (%) <span id="dLeft">5.5</span>%</label>
+          <input type="range" id="cLeft" min="-10" max="20" step="0.1" value="5.5">
+        </div>
+        <div class="slider-group">
+          <label>width (%) <span id="dWidth">89.0</span>%</label>
+          <input type="range" id="cWidth" min="50" max="115" step="0.1" value="89.0">
+        </div>
+        <div class="slider-group">
+          <label>height (%) <span id="dHeight">67.3</span>%</label>
+          <input type="range" id="cHeight" min="20" max="85" step="0.1" value="67.3">
+        </div>
+        <div class="slider-group">
+          <label>font size (px) <span id="dFont">9</span>px</label>
+          <input type="range" id="cFont" min="4" max="18" step="0.5" value="9">
+        </div>
+
+        <div style="margin-top: 14px; display:flex; flex-direction:column; gap:6px;">
+          <button class="btn btn-gold btn-sm" onclick="guardarCalib()">💾 Guardar valores</button>
+          <button class="btn btn-outline btn-sm" onclick="toggleCalibGrid()">👁 Ocultar/mostrar guías</button>
+        </div>
+
+        <div class="success-msg" id="saveMsg">✅ Valores guardados</div>
+      </div>
+
+      <div class="calib-preview">
+        <div class="calib-card-wrapper">
+          <img class="calib-card-bg" src="img/2.png" alt="fondo tarjeta">
+          <div class="calib-grid" id="calibGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /tab-calibrate -->
+
+<script src="bingo_app.js"></script>
+</body>
+</html>
