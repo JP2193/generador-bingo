@@ -6,6 +6,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <link rel="stylesheet" href="bingo_style.css">
 </head>
 <body>
@@ -37,8 +38,10 @@
       <button class="btn btn-primary" onclick="generarTarjeta()">✦ Generar tarjeta</button>
       <button class="btn btn-outline" onclick="generarTarjeta()">↺ Otra aleatoria</button>
       <button class="btn btn-gold"    onclick="guardarImagen()">💾 Guardar imagen</button>
+      <button class="btn btn-outline"  onclick="generarLote()">🗂 Exportar 50 tarjetas</button>
     </div>
     <div class="error-msg" id="errorMsg"></div>
+    <div id="progressMsg" style="display:none; margin-top:10px; font-size:0.82rem; color:#593636;"></div>
   </div>
 
   <div id="previewArea" style="display:none">

@@ -184,8 +184,9 @@ function showError(msg) {
   setTimeout(() => el.style.display = 'none', 5000);
 }
 
-function generarTarjeta() {
-  if (!frasesXLS) { showError('Primero cargá el archivo Excel con las frases (Paso 1).'); return; }
+// Retorna array de 24 frases mezcladas según la distribución, o null si hay error
+function generarFrases() {
+  if (!frasesXLS) { showError('Primero cargá el archivo Excel con las frases (Paso 1).'); return null; }
   const faciles   = frasesXLS.facil;
   const medias    = frasesXLS.medio;
   const dificiles = frasesXLS.dificil;
@@ -194,17 +195,20 @@ function generarTarjeta() {
   const nD = parseInt(document.getElementById('nDificil').value) || 0;
   const total = nF + nM + nD;
 
-  if (total !== 24) { showError(`La distribución suma ${total}, necesitás exactamente 24.`); return; }
-  if (faciles.length   < nF) { showError(`Necesitás ${nF} frases fáciles, tenés ${faciles.length}.`);   return; }
-  if (medias.length    < nM) { showError(`Necesitás ${nM} frases medias, tenés ${medias.length}.`);     return; }
-  if (dificiles.length < nD) { showError(`Necesitás ${nD} frases difíciles, tenés ${dificiles.length}.`); return; }
+  if (total !== 24) { showError(`La distribución suma ${total}, necesitás exactamente 24.`); return null; }
+  if (faciles.length   < nF) { showError(`Necesitás ${nF} frases fáciles, tenés ${faciles.length}.`);   return null; }
+  if (medias.length    < nM) { showError(`Necesitás ${nM} frases medias, tenés ${medias.length}.`);     return null; }
+  if (dificiles.length < nD) { showError(`Necesitás ${nD} frases difíciles, tenés ${dificiles.length}.`); return null; }
 
-  const todas = shuffle([
+  return shuffle([
     ...shuffle(faciles).slice(0,nF),
     ...shuffle(medias).slice(0,nM),
     ...shuffle(dificiles).slice(0,nD)
   ]);
+}
 
+// Construye el DOM de la grilla con las frases dadas
+function buildGrid(todas) {
   const o = document.getElementById('gridOverlay');
   o.style.top    = calib.top + '%';
   o.style.left   = calib.left + '%';
@@ -229,9 +233,54 @@ function generarTarjeta() {
     }
     o.appendChild(cell);
   }
+}
 
+function generarTarjeta() {
+  const todas = generarFrases();
+  if (!todas) return;
+  buildGrid(todas);
   document.getElementById('previewArea').style.display = 'block';
   document.getElementById('previewArea').scrollIntoView({behavior:'smooth'});
+}
+
+// ── EXPORTAR LOTE ──
+async function generarLote() {
+  if (!frasesXLS) { showError('Primero cargá el archivo Excel con las frases (Paso 1).'); return; }
+
+  const TOTAL = 50;
+  const zip = new JSZip();
+  const progress = document.getElementById('progressMsg');
+  progress.style.display = 'block';
+  document.getElementById('previewArea').style.display = 'block';
+
+  const h2cOpts = { useCORS: true, scale: 2, backgroundColor: null, logging: false };
+  const wrapper = document.getElementById('cardWrapper');
+
+  for (let i = 1; i <= TOTAL; i++) {
+    progress.textContent = `⏳ Generando ${i}/${TOTAL}...`;
+
+    const todas = generarFrases();
+    if (!todas) { progress.style.display = 'none'; return; }
+    buildGrid(todas);
+
+    // Esperar un frame para que el navegador pinte el DOM
+    await new Promise(r => setTimeout(r, 50));
+
+    const canvas = await html2canvas(wrapper, h2cOpts);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    zip.file(`tarjeta-${String(i).padStart(2,'0')}.png`, blob);
+  }
+
+  progress.textContent = '📦 Empaquetando ZIP...';
+  const zipBlob = await zip.generateAsync({ type: 'blob' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(zipBlob);
+  link.download = 'bingo-tarjetas.zip';
+  link.click();
+  URL.revokeObjectURL(link.href);
+
+  progress.textContent = '✅ ¡Listo! 50 tarjetas descargadas.';
+  setTimeout(() => { progress.style.display = 'none'; }, 3000);
 }
 
 // ── GUARDAR IMAGEN ──
