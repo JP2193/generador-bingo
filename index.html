@@ -34,14 +34,10 @@
       <button class="btn btn-outline" onclick="generarTarjeta()">↺ Otra aleatoria</button>
       <button class="btn btn-gold"    onclick="guardarImagen()">💾 Guardar</button>
       <div class="lote-group">
-        <select id="loteCount" class="lote-select">
-          <option value="10">10</option><option value="20">20</option><option value="30">30</option>
-          <option value="40">40</option><option value="50" selected>50</option><option value="60">60</option>
-          <option value="70">70</option><option value="80">80</option><option value="90">90</option>
-          <option value="100">100</option><option value="110">110</option><option value="120">120</option>
-          <option value="130">130</option><option value="140">140</option><option value="150">150</option>
-        </select>
-        <button class="btn btn-outline" onclick="generarLote()">🗂 Exportar lote</button>
+        <button class="stepper-btn stepper-left" onclick="cambiarLote(-10)">−</button>
+        <span id="loteCount" class="stepper-value">50</span>
+        <button class="stepper-btn stepper-right" onclick="cambiarLote(10)">+</button>
+        <button class="btn btn-outline lote-export-btn" onclick="generarLote()">🗂 Exportar lote</button>
       </div>
     </div>
     <div class="error-msg" id="errorMsg"></div>
