@@ -1,3 +1,10 @@
+// ── SUPABASE ──
+const SUPABASE_URL = "https://xwywnaymonrawikfugvb.supabase.co";   // ej: https://abcdef.supabase.co
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3eXduYXltb25yYXdpa2Z1Z3ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MDEzODEsImV4cCI6MjA4Nzk3NzM4MX0.uBsSze2surxMfg2xPrvRnjoXer2Z-O4qeOLYFGyOano";      // Settings → API → anon public
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let deletedIds = new Set();
+
 // ── FRASES DE MUESTRA PARA EL CALIBRADOR ──
 const frasesDemo = [
   "Usa anteojos","Tiene mascotas","Le gusta bailar","Toma mate",
@@ -27,20 +34,27 @@ function saveCalib(c) {
 // ── ESTADO FRASES ──
 let frasesXLS = null; // { facil: [], medio: [], dificil: [] }
 
-// Carga frases: localStorage tiene prioridad, luego fetch del JSON
+// Carga frases: Supabase primero, fallback a localStorage / JSON
 async function cargarFrases() {
   let datos = null;
   try {
-    const guardado = localStorage.getItem('bingo_frases');
-    if (guardado) {
-      datos = JSON.parse(guardado);
-    } else {
-      const res = await fetch('data/frases.json');
-      datos = await res.json();
-    }
+    const { data, error } = await db.from('frases').select('*').order('frase');
+    if (error) throw error;
+    datos = data;
   } catch(e) {
-    mostrarFrasesMsg('No se pudo cargar frases.json: ' + e.message, 'error');
-    return;
+    // Fallback offline: localStorage o JSON estático
+    try {
+      const guardado = localStorage.getItem('bingo_frases');
+      if (guardado) {
+        datos = JSON.parse(guardado);
+      } else {
+        const res = await fetch('data/frases.json');
+        datos = await res.json();
+      }
+    } catch(e2) {
+      mostrarFrasesMsg('No se pudo cargar frases: ' + e2.message, 'error');
+      return;
+    }
   }
   aplicarDatos(datos);
   renderTablaFrases(datos);
@@ -84,11 +98,13 @@ function renderTablaFrases(datos) {
   container.appendChild(tabla);
 
   const tbody = document.getElementById('frasesBody');
-  datos.forEach(row => agregarFilaDOM(tbody, row.frase, row.nivel));
+  datos.forEach(row => agregarFilaDOM(tbody, row.frase, row.nivel, row.id));
 }
 
-function agregarFilaDOM(tbody, frase = '', nivel = 'facil') {
+function agregarFilaDOM(tbody, frase = '', nivel = 'facil', id = null) {
+  const rowId = id || crypto.randomUUID();
   const tr = document.createElement('tr');
+  tr.dataset.id = rowId;
   tr.innerHTML = `
     <td><input type="text" class="frase-input" value="${frase.replace(/"/g, '&quot;')}" placeholder="Escribí una frase..."></td>
     <td>
@@ -114,27 +130,38 @@ function agregarFila() {
 }
 
 function eliminarFila(btn) {
-  btn.closest('tr').remove();
+  const tr = btn.closest('tr');
+  const id = tr.dataset.id;
+  if (id) deletedIds.add(id);
+  tr.remove();
 }
 
 function leerTabla() {
   const filas = document.querySelectorAll('#frasesBody tr');
   return Array.from(filas).map(tr => ({
+    id:    tr.dataset.id,
     frase: tr.querySelector('.frase-input').value.trim(),
     nivel: tr.querySelector('.nivel-select').value,
   })).filter(r => r.frase);
 }
 
-function guardarFrases() {
-  const datos = leerTabla();
-  try {
-    localStorage.setItem('bingo_frases', JSON.stringify(datos));
-  } catch(e) {
-    mostrarFrasesMsg('Error al guardar: ' + e.message, 'error');
+async function guardarFrases() {
+  const rows = leerTabla();
+  const { error: upsertErr } = await db.from('frases').upsert(rows);
+  if (upsertErr) {
+    mostrarFrasesMsg('Error al guardar: ' + upsertErr.message, 'error');
     return;
   }
-  aplicarDatos(datos);
-  mostrarFrasesMsg('✓ Cambios guardados (en este dispositivo)', 'ok');
+  if (deletedIds.size > 0) {
+    const { error: deleteErr } = await db.from('frases').delete().in('id', [...deletedIds]);
+    if (deleteErr) {
+      mostrarFrasesMsg('Error al eliminar: ' + deleteErr.message, 'error');
+      return;
+    }
+    deletedIds.clear();
+  }
+  aplicarDatos(rows);
+  mostrarFrasesMsg('✓ Cambios guardados en Supabase', 'ok');
 }
 
 function exportarJSON() {
@@ -148,19 +175,20 @@ function exportarJSON() {
 }
 
 async function resetearFrases() {
-  if (!confirm('¿Resetear frases al estado original del servidor? Se perderán los cambios locales.')) return;
-  localStorage.removeItem('bingo_frases');
+  if (!confirm('¿Recargar frases desde Supabase? Se perderán los cambios no guardados.')) return;
+  deletedIds.clear();
   let datos;
   try {
-    const res = await fetch('data/frases.json');
-    datos = await res.json();
+    const { data, error } = await db.from('frases').select('*').order('frase');
+    if (error) throw error;
+    datos = data;
   } catch(e) {
-    mostrarFrasesMsg('No se pudo cargar frases.json: ' + e.message, 'error');
+    mostrarFrasesMsg('No se pudo conectar con Supabase: ' + e.message, 'error');
     return;
   }
   aplicarDatos(datos);
   renderTablaFrases(datos);
-  mostrarFrasesMsg('↩ Frases reseteadas al original', 'ok');
+  mostrarFrasesMsg('↩ Frases recargadas desde Supabase', 'ok');
 }
 
 function mostrarFrasesMsg(msg, tipo) {
