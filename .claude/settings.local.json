@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk 'length > 1000 {print NR\"\": \"\"length\"\" chars\"\"}' \"C:\\\\Users\\\\javit\\\\OneDrive\\\\Desktop\\\\Proyectos\\\\generador-bingo\\\\bingo_generator.html\")"
+    ]
+  }
+}
