@@ -421,7 +421,13 @@ input[type=range] { width: 100%; accent-color: var(--gold); cursor: pointer; }
 
   .card-wrapper { max-width: 100%; }
 
-  .nivel-select { font-size: 0.7rem; padding: 5px 4px; }
-  .frases-tabla thead th:nth-child(2) { display: none; }
+  /* Tabla frases: anchos fijos para que no se superponga nada */
+  .frases-tabla { table-layout: fixed; width: 100%; }
+  .frases-tabla th:nth-child(1), .frases-tabla td:nth-child(1) { width: auto; }
+  .frases-tabla th:nth-child(2), .frases-tabla td:nth-child(2) { width: 72px; }
+  .frases-tabla th:nth-child(3), .frases-tabla td:nth-child(3) { width: 36px; }
+  .nivel-select { font-size: 0.68rem; padding: 5px 2px; width: 100%; }
+  .frases-tabla thead th { padding: 10px 6px; font-size: 0.66rem; }
+  .frase-input { font-size: 0.78rem; padding: 6px 5px; }
   #tablaContainer { max-height: 380px; }
 }
