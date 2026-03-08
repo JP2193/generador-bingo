@@ -399,6 +399,32 @@ input[type=range] { width: 100%; accent-color: var(--gold); cursor: pointer; }
   .grid-cell { font-size: 9pt !important; }
 }
 
+/* ── SAVE BUTTON ANIMATION ── */
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+.btn-spinner {
+  display: inline-block;
+  width: 13px; height: 13px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: btn-spin 0.65s linear infinite;
+  vertical-align: middle;
+}
+.btn-gold.is-saving {
+  transform: scale(0.93);
+  opacity: 0.85;
+  pointer-events: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.btn-gold.is-saved {
+  background: #4caf7d;
+  box-shadow: 0 2px 8px rgba(76,175,125,0.35);
+  pointer-events: none;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
 @media (max-width: 600px) {
   .tabs { padding: 16px 12px 0; }
   .tab-btn { padding: 10px 16px; font-size: 0.72rem; letter-spacing: 0.8px; }

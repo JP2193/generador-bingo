@@ -146,22 +146,40 @@ function leerTabla() {
 }
 
 async function guardarFrases() {
+  const btn = document.getElementById('btnGuardarFrases');
+  const originalHTML = btn.innerHTML;
+
+  btn.innerHTML = '<span class="btn-spinner"></span>';
+  btn.classList.add('is-saving');
+
   const rows = leerTabla();
   const { error: upsertErr } = await db.from('frases').upsert(rows);
   if (upsertErr) {
+    btn.innerHTML = originalHTML;
+    btn.classList.remove('is-saving');
     mostrarFrasesMsg('Error al guardar: ' + upsertErr.message, 'error');
     return;
   }
   if (deletedIds.size > 0) {
     const { error: deleteErr } = await db.from('frases').delete().in('id', [...deletedIds]);
     if (deleteErr) {
+      btn.innerHTML = originalHTML;
+      btn.classList.remove('is-saving');
       mostrarFrasesMsg('Error al eliminar: ' + deleteErr.message, 'error');
       return;
     }
     deletedIds.clear();
   }
   aplicarDatos(rows);
-  mostrarFrasesMsg('✓ Cambios guardados en Supabase', 'ok');
+
+  btn.classList.remove('is-saving');
+  btn.classList.add('is-saved');
+  btn.innerHTML = '✓ Cambios guardados';
+
+  setTimeout(() => {
+    btn.classList.remove('is-saved');
+    btn.innerHTML = originalHTML;
+  }, 2000);
 }
 
 async function resetearFrases() {
