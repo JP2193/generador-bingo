@@ -276,6 +276,11 @@ function guardarCalib() {
 function resetearCalib() {
   calib = { top: 29.5, left: 5.5, width: 89.0, height: 67.3, font: 9 };
   initCalib();
+  saveCalib(calib);
+  applyCalibToGenerator();
+  const msg = document.getElementById('saveMsg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 2500);
 }
 
 function toggleCalibGrid() {
