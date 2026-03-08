@@ -71,11 +71,11 @@ function aplicarDatos(datos) {
 
 function actualizarBadges() {
   if (!frasesXLS) return;
-  const txt = `${frasesXLS.facil.length} fáciles · ${frasesXLS.medio.length} medias · ${frasesXLS.dificil.length} difíciles`;
-  const status = document.getElementById('frasesStatus');
-  const badge  = document.getElementById('frasesBadge');
-  if (status) status.textContent = '— ' + txt;
-  if (badge)  badge.textContent  = txt;
+  const total = frasesXLS.facil.length + frasesXLS.medio.length + frasesXLS.dificil.length;
+  const badge   = document.getElementById('frasesBadge');
+  const totalEl = document.getElementById('totalFrases');
+  if (badge)   badge.textContent   = `${frasesXLS.facil.length} fáciles · ${frasesXLS.medio.length} medias · ${frasesXLS.dificil.length} difíciles`;
+  if (totalEl) totalEl.textContent = `Total frases: ${total}`;
 }
 
 // ── TABLA EDITABLE ──
@@ -162,16 +162,6 @@ async function guardarFrases() {
   }
   aplicarDatos(rows);
   mostrarFrasesMsg('✓ Cambios guardados en Supabase', 'ok');
-}
-
-function exportarJSON() {
-  const datos = leerTabla();
-  const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'frases.json';
-  link.click();
-  URL.revokeObjectURL(link.href);
 }
 
 async function resetearFrases() {
@@ -377,7 +367,7 @@ function generarTarjeta() {
 async function generarLote() {
   if (!frasesXLS) { showError('Las frases no están cargadas aún.'); return; }
 
-  const TOTAL = 50;
+  const TOTAL = parseInt(document.getElementById('loteCount')?.value) || 50;
   const zip = new JSZip();
   const progress = document.getElementById('progressMsg');
   progress.style.display = 'block';
