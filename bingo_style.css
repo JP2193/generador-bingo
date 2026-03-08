@@ -187,6 +187,77 @@ input[type=range] { width: 100%; accent-color: var(--gold); cursor: pointer; }
   font-weight: 700; margin-left: 8px; vertical-align: middle;
 }
 
+/* ── TABLA DE FRASES ── */
+.frases-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.frases-tabla thead th {
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #999;
+  padding: 0 8px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.frases-tabla tbody tr:hover { background: #fffaf6; }
+.frases-tabla td {
+  padding: 5px 6px;
+  border-bottom: 1px solid #f0e8e0;
+  vertical-align: middle;
+}
+.frases-tabla td:first-child { width: 100%; }
+.frases-tabla td:last-child  { width: 36px; text-align: center; }
+
+.frase-input {
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.8rem;
+  color: var(--text);
+  background: transparent;
+  transition: border-color 0.15s, background 0.15s;
+}
+.frase-input:hover  { border-color: var(--border); background: #fffdf9; }
+.frase-input:focus  { outline: none; border-color: var(--gold); background: #fffdf9; box-shadow: 0 0 0 3px rgba(168,147,122,0.12); }
+
+.nivel-select {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.75rem;
+  color: var(--text);
+  background: #fffdf9;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.nivel-select:focus { outline: none; border-color: var(--gold); }
+
+.btn-eliminar {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+.btn-eliminar:hover { color: #842029; background: #f8d7da; }
+
+#tablaContainer {
+  max-height: 460px;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
 @media print {
   body { background: white; }
   .tabs, .tab-content:not(#tab-generate) { display: none !important; }
@@ -220,4 +291,9 @@ input[type=range] { width: 100%; accent-color: var(--gold); cursor: pointer; }
 
   /* Tarjeta preview: más ancha */
   .card-wrapper { max-width: 100%; }
+
+  /* Tabla de frases en móvil */
+  .nivel-select { font-size: 0.7rem; padding: 5px 4px; }
+  .frases-tabla thead th:nth-child(2) { display: none; }
+  #tablaContainer { max-height: 360px; }
 }

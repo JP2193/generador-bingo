@@ -9,7 +9,7 @@ const frasesDemo = [
   "Tiene +2 hijos","Tiene un tatuaje","Es pelado/a"
 ];
 
-// ── ESTADO CALIBRACIÓN (con defaults o localStorage) ──
+// ── ESTADO CALIBRACIÓN ──
 let calib = loadCalib();
 
 function loadCalib() {
@@ -24,12 +24,161 @@ function saveCalib(c) {
   try { localStorage.setItem('bingo_calib', JSON.stringify(c)); } catch(e) {}
 }
 
+// ── ESTADO FRASES ──
+let frasesXLS = null; // { facil: [], medio: [], dificil: [] }
+
+// Carga frases: localStorage tiene prioridad, luego fetch del JSON
+async function cargarFrases() {
+  let datos = null;
+  try {
+    const guardado = localStorage.getItem('bingo_frases');
+    if (guardado) {
+      datos = JSON.parse(guardado);
+    } else {
+      const res = await fetch('data/frases.json');
+      datos = await res.json();
+    }
+  } catch(e) {
+    mostrarFrasesMsg('No se pudo cargar frases.json: ' + e.message, 'error');
+    return;
+  }
+  aplicarDatos(datos);
+  renderTablaFrases(datos);
+}
+
+function aplicarDatos(datos) {
+  frasesXLS = {
+    facil:   datos.filter(r => r.nivel === 'facil').map(r => r.frase).filter(Boolean),
+    medio:   datos.filter(r => r.nivel === 'medio').map(r => r.frase).filter(Boolean),
+    dificil: datos.filter(r => r.nivel === 'dificil').map(r => r.frase).filter(Boolean),
+  };
+  actualizarBadges();
+}
+
+function actualizarBadges() {
+  if (!frasesXLS) return;
+  const txt = `${frasesXLS.facil.length} fáciles · ${frasesXLS.medio.length} medias · ${frasesXLS.dificil.length} difíciles`;
+  const status = document.getElementById('frasesStatus');
+  const badge  = document.getElementById('frasesBadge');
+  if (status) status.textContent = '— ' + txt;
+  if (badge)  badge.textContent  = txt;
+}
+
+// ── TABLA EDITABLE ──
+const NIVEL_LABELS = { facil: 'Fácil', medio: 'Media', dificil: 'Difícil' };
+
+function renderTablaFrases(datos) {
+  const container = document.getElementById('tablaContainer');
+  const tabla = document.createElement('table');
+  tabla.className = 'frases-tabla';
+  tabla.innerHTML = `
+    <thead>
+      <tr>
+        <th>Frase</th>
+        <th>Nivel</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="frasesBody"></tbody>`;
+  container.innerHTML = '';
+  container.appendChild(tabla);
+
+  const tbody = document.getElementById('frasesBody');
+  datos.forEach(row => agregarFilaDOM(tbody, row.frase, row.nivel));
+}
+
+function agregarFilaDOM(tbody, frase = '', nivel = 'facil') {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" class="frase-input" value="${frase.replace(/"/g, '&quot;')}" placeholder="Escribí una frase..."></td>
+    <td>
+      <select class="nivel-select">
+        <option value="facil"   ${nivel === 'facil'   ? 'selected' : ''}>Fácil</option>
+        <option value="medio"   ${nivel === 'medio'   ? 'selected' : ''}>Media</option>
+        <option value="dificil" ${nivel === 'dificil' ? 'selected' : ''}>Difícil</option>
+      </select>
+    </td>
+    <td><button class="btn-eliminar" onclick="eliminarFila(this)" title="Eliminar">✕</button></td>`;
+  tbody.appendChild(tr);
+}
+
+function agregarFila() {
+  const tbody = document.getElementById('frasesBody');
+  if (!tbody) return;
+  agregarFilaDOM(tbody, '', 'facil');
+  // Scroll y foco en la nueva fila
+  const inputs = tbody.querySelectorAll('.frase-input');
+  const ultimo = inputs[inputs.length - 1];
+  ultimo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  ultimo.focus();
+}
+
+function eliminarFila(btn) {
+  btn.closest('tr').remove();
+}
+
+function leerTabla() {
+  const filas = document.querySelectorAll('#frasesBody tr');
+  return Array.from(filas).map(tr => ({
+    frase: tr.querySelector('.frase-input').value.trim(),
+    nivel: tr.querySelector('.nivel-select').value,
+  })).filter(r => r.frase);
+}
+
+function guardarFrases() {
+  const datos = leerTabla();
+  try {
+    localStorage.setItem('bingo_frases', JSON.stringify(datos));
+  } catch(e) {
+    mostrarFrasesMsg('Error al guardar: ' + e.message, 'error');
+    return;
+  }
+  aplicarDatos(datos);
+  mostrarFrasesMsg('✓ Cambios guardados (en este dispositivo)', 'ok');
+}
+
+function exportarJSON() {
+  const datos = leerTabla();
+  const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'frases.json';
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+async function resetearFrases() {
+  if (!confirm('¿Resetear frases al estado original del servidor? Se perderán los cambios locales.')) return;
+  localStorage.removeItem('bingo_frases');
+  let datos;
+  try {
+    const res = await fetch('data/frases.json');
+    datos = await res.json();
+  } catch(e) {
+    mostrarFrasesMsg('No se pudo cargar frases.json: ' + e.message, 'error');
+    return;
+  }
+  aplicarDatos(datos);
+  renderTablaFrases(datos);
+  mostrarFrasesMsg('↩ Frases reseteadas al original', 'ok');
+}
+
+function mostrarFrasesMsg(msg, tipo) {
+  const el = document.getElementById('frasesMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = tipo === 'ok' ? '#d4edda' : '#f8d7da';
+  el.style.color      = tipo === 'ok' ? '#155724' : '#842029';
+  setTimeout(() => el.style.display = 'none', 3000);
+}
+
 // ── TABS ──
 function switchTab(name) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  document.querySelectorAll('.tab-btn')[name === 'generate' ? 0 : 1].classList.add('active');
+  const idx = { generate: 0, frases: 1, calibrate: 2 };
+  document.querySelectorAll('.tab-btn')[idx[name]].classList.add('active');
   if (name === 'calibrate') initCalib();
 }
 
@@ -111,7 +260,6 @@ function toggleCalibGrid() {
   document.getElementById('calibGrid').style.display = calibVisible ? 'grid' : 'none';
 }
 
-// ── APLICAR CALIBRACIÓN AL GENERADOR ──
 function applyCalibToGenerator() {
   const o = document.getElementById('gridOverlay');
   if (!o) return;
@@ -122,50 +270,6 @@ function applyCalibToGenerator() {
   document.querySelectorAll('#gridOverlay .grid-cell:not(.centro)').forEach(c => {
     c.style.fontSize = calib.font + 'px';
   });
-}
-
-// ── CARGA DESDE EXCEL ──
-let frasesXLS = null; // { facil: [], medio: [], dificil: [] }
-
-function cargarExcel(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const wb = XLSX.read(e.target.result, { type: 'array' });
-      if (!wb.SheetNames.includes('frases')) {
-        mostrarExcelError('El archivo no tiene una hoja llamada "frases".');
-        return;
-      }
-      const ws = wb.Sheets['frases'];
-      const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
-      if (rows.length === 0 || !('frase' in rows[0]) || !('nivel' in rows[0])) {
-        mostrarExcelError('La hoja "frases" debe tener las columnas "frase" y "nivel".');
-        return;
-      }
-      const facil   = rows.filter(r => String(r.nivel).trim() === 'facil').map(r => String(r.frase).trim()).filter(Boolean);
-      const medio   = rows.filter(r => String(r.nivel).trim() === 'medio').map(r => String(r.frase).trim()).filter(Boolean);
-      const dificil = rows.filter(r => String(r.nivel).trim() === 'dificil').map(r => String(r.frase).trim()).filter(Boolean);
-      frasesXLS = { facil, medio, dificil };
-      document.getElementById('excelError').style.display = 'none';
-      const res = document.getElementById('excelResumen');
-      res.textContent = `✓ ${facil.length} fáciles · ${medio.length} medias · ${dificil.length} difíciles — listo para generar`;
-      res.style.display = 'block';
-    } catch(err) {
-      mostrarExcelError('No se pudo leer el archivo: ' + err.message);
-    }
-  };
-  reader.readAsArrayBuffer(file);
-  // Reset para poder reseleccionar el mismo archivo
-  input.value = '';
-}
-
-function mostrarExcelError(msg) {
-  frasesXLS = null;
-  document.getElementById('excelResumen').style.display = 'none';
-  const el = document.getElementById('excelError');
-  el.textContent = msg; el.style.display = 'block';
 }
 
 // ── GENERADOR ──
@@ -184,9 +288,8 @@ function showError(msg) {
   setTimeout(() => el.style.display = 'none', 5000);
 }
 
-// Retorna array de 24 frases mezcladas según la distribución, o null si hay error
 function generarFrases() {
-  if (!frasesXLS) { showError('Primero cargá el archivo Excel con las frases (Paso 1).'); return null; }
+  if (!frasesXLS) { showError('Las frases no están cargadas aún.'); return null; }
   const faciles   = frasesXLS.facil;
   const medias    = frasesXLS.medio;
   const dificiles = frasesXLS.dificil;
@@ -207,7 +310,6 @@ function generarFrases() {
   ]);
 }
 
-// Construye el DOM de la grilla con las frases dadas
 function buildGrid(todas) {
   const o = document.getElementById('gridOverlay');
   o.style.top    = calib.top + '%';
@@ -245,7 +347,7 @@ function generarTarjeta() {
 
 // ── EXPORTAR LOTE ──
 async function generarLote() {
-  if (!frasesXLS) { showError('Primero cargá el archivo Excel con las frases (Paso 1).'); return; }
+  if (!frasesXLS) { showError('Las frases no están cargadas aún.'); return; }
 
   const TOTAL = 50;
   const zip = new JSZip();
@@ -258,14 +360,10 @@ async function generarLote() {
 
   for (let i = 1; i <= TOTAL; i++) {
     progress.textContent = `⏳ Generando ${i}/${TOTAL}...`;
-
     const todas = generarFrases();
     if (!todas) { progress.style.display = 'none'; return; }
     buildGrid(todas);
-
-    // Esperar un frame para que el navegador pinte el DOM
     await new Promise(r => setTimeout(r, 50));
-
     const canvas = await html2canvas(wrapper, h2cOpts);
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     zip.file(`tarjeta-${String(i).padStart(2,'0')}.png`, blob);
@@ -294,10 +392,7 @@ function guardarImagen() {
   btn.disabled = true;
   btn.textContent = '⏳ Guardando...';
   html2canvas(wrapper, {
-    useCORS: true,
-    scale: 2,
-    backgroundColor: null,
-    logging: false
+    useCORS: true, scale: 2, backgroundColor: null, logging: false
   }).then(canvas => {
     const link = document.createElement('a');
     link.download = 'bingo-tarjeta.png';
@@ -316,4 +411,5 @@ window.onload = () => {
       document.getElementById('savedBadge').style.display = 'inline-block';
     }
   } catch(e) {}
+  cargarFrases();
 };
