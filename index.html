@@ -22,7 +22,10 @@
   <div class="card">
     <h2>Paso 1 · Frases</h2>
     <input type="file" id="excelInput" accept=".xlsx" style="display:none" onchange="cargarExcel(this)">
-    <button class="btn btn-outline" onclick="document.getElementById('excelInput').click()">📂 Cargar frases desde Excel</button>
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="document.getElementById('excelInput').click()">📂 Cargar frases desde Excel</button>
+      <button class="btn btn-primary" onclick="generarTarjeta()">✦ Generar tarjeta</button>
+    </div>
     <div id="excelResumen" style="margin-top:10px; font-size:0.82rem; color:#155724; background:#d4edda; border-radius:8px; padding:9px 13px; display:none;"></div>
     <div id="excelError"   style="margin-top:10px; font-size:0.82rem; color:#842029; background:#f8d7da; border-radius:8px; padding:9px 13px; display:none;"></div>
   </div>
@@ -35,10 +38,9 @@
       <div class="dist-item"><label>🔴 Difíciles</label><input type="number" id="nDificil" value="3" min="0" max="24"></div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-primary" onclick="generarTarjeta()">✦ Generar tarjeta</button>
-      <button class="btn btn-outline" onclick="generarTarjeta()">↺ Otra aleatoria</button>
+      <button class="btn btn-outline" onclick="generarTarjeta()">↺ Generar aleatoria</button>
       <button class="btn btn-gold"    onclick="guardarImagen()">💾 Guardar imagen</button>
-      <button class="btn btn-outline"  onclick="generarLote()">🗂 Exportar 50 tarjetas</button>
+      <button class="btn btn-outline"  onclick="generarLote()">🗂 Exportar lote</button>
     </div>
     <div class="error-msg" id="errorMsg"></div>
     <div id="progressMsg" style="display:none; margin-top:10px; font-size:0.82rem; color:#593636;"></div>
