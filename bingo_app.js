@@ -306,6 +306,12 @@ function toggleCalibGrid() {
   document.getElementById('calibGrid').style.display = calibVisible ? 'grid' : 'none';
 }
 
+let calibBorders = true;
+function toggleCalibBorders() {
+  calibBorders = !calibBorders;
+  document.getElementById('calibGrid').classList.toggle('no-borders', !calibBorders);
+}
+
 function applyCalibToGenerator() {
   const o = document.getElementById('gridOverlay');
   if (!o) return;

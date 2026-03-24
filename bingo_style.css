@@ -501,6 +501,14 @@ input[type=range] {
 
 .calib-cell.centro { background: rgba(255,220,0,0.2); }
 
+.calib-grid.no-borders {
+  border-color: transparent;
+}
+.calib-grid.no-borders .calib-cell {
+  border-color: transparent;
+  background: transparent;
+}
+
 .saved-badge {
   display: inline-block;
   background: #e8f3eb;
