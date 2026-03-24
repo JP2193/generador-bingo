@@ -24,7 +24,7 @@ function loadCalib() {
     const s = localStorage.getItem('bingo_calib');
     if (s) return JSON.parse(s);
   } catch(e) {}
-  return { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5, borderColor: '#000000', borderAlpha: 1.0 };
+  return { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5, borderColor: '#a8937a', borderAlpha: 0.15 };
 }
 
 function saveCalib(c) {
@@ -305,7 +305,7 @@ function guardarCalib() {
 }
 
 function resetearCalib() {
-  calib = { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5, borderColor: '#000000', borderAlpha: 1.0 };
+  calib = { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5, borderColor: '#a8937a', borderAlpha: 0.15 };
   initCalib();
   saveCalib(calib);
   applyCalibToGenerator();
