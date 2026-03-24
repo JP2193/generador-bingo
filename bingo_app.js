@@ -24,7 +24,7 @@ function loadCalib() {
     const s = localStorage.getItem('bingo_calib');
     if (s) return JSON.parse(s);
   } catch(e) {}
-  return { top: 31.7, left: 5.5, width: 89.6, height: 65.4, font: 11.5 };
+  return { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5 };
 }
 
 function saveCalib(c) {
@@ -292,7 +292,7 @@ function guardarCalib() {
 }
 
 function resetearCalib() {
-  calib = { top: 31.7, left: 5.5, width: 89.6, height: 65.4, font: 11.5 };
+  calib = { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5 };
   initCalib();
   saveCalib(calib);
   applyCalibToGenerator();
