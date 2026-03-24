@@ -24,7 +24,7 @@ function loadCalib() {
     const s = localStorage.getItem('bingo_calib');
     if (s) return JSON.parse(s);
   } catch(e) {}
-  return { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5, borderColor: '#dc3232', borderAlpha: 0.6 };
+  return { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5, borderColor: '#000000', borderAlpha: 1.0 };
 }
 
 function saveCalib(c) {
@@ -272,10 +272,7 @@ function updateCalibDisplay() {
   g.style.left   = calib.left + '%';
   g.style.width  = calib.width + '%';
   g.style.height = calib.height + '%';
-  const color = calib.borderColor || '#dc3232';
-  const alpha = calib.borderAlpha !== undefined ? calib.borderAlpha : 0.6;
-  g.style.setProperty('--calib-color',       hexToRgba(color, alpha));
-  g.style.setProperty('--calib-color-light', hexToRgba(color, alpha * 0.5));
+  applyGridColor();
 }
 
 function buildCalibGrid() {
@@ -308,7 +305,7 @@ function guardarCalib() {
 }
 
 function resetearCalib() {
-  calib = { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5, borderColor: '#dc3232', borderAlpha: 0.6 };
+  calib = { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5, borderColor: '#000000', borderAlpha: 1.0 };
   initCalib();
   saveCalib(calib);
   applyCalibToGenerator();
@@ -328,6 +325,14 @@ function toggleCalibBorders() {
   document.getElementById('calibGrid').classList.toggle('no-borders', !calibBorders);
 }
 
+function applyGridColor() {
+  const o = document.getElementById('gridOverlay');
+  if (!o) return;
+  const color = calib.borderColor || '#000000';
+  const alpha = calib.borderAlpha !== undefined ? calib.borderAlpha : 1.0;
+  o.style.setProperty('--grid-color', hexToRgba(color, alpha));
+}
+
 function applyCalibToGenerator() {
   const o = document.getElementById('gridOverlay');
   if (!o) return;
@@ -338,6 +343,7 @@ function applyCalibToGenerator() {
   document.querySelectorAll('#gridOverlay .grid-cell:not(.centro)').forEach(c => {
     c.style.fontSize = calib.font + 'px';
   });
+  applyGridColor();
 }
 
 // ── GENERADOR ──
@@ -385,6 +391,7 @@ function buildGrid(todas) {
   o.style.width  = calib.width + '%';
   o.style.height = calib.height + '%';
   o.innerHTML = '';
+  applyGridColor();
 
   let fi = 0;
   for (let i = 0; i < 25; i++) {

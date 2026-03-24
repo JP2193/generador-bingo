@@ -402,11 +402,11 @@ textarea:focus {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
-  border: 1px solid #d5cec5;
+  border: 1px solid var(--grid-color, rgba(0,0,0,1));
 }
 
 .grid-cell {
-  border: 1px solid #e5d8c8;
+  border: 1px solid var(--grid-color, rgba(0,0,0,1));
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -484,11 +484,11 @@ input[type=range] {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
-  border: 2px solid var(--calib-color, rgba(220,50,50,0.6));
+  border: 2px solid rgba(220,50,50,0.6);
 }
 
 .calib-cell {
-  border: 1px solid var(--calib-color-light, rgba(220,50,50,0.3));
+  border: 1px solid rgba(220,50,50,0.3);
   display: flex;
   align-items: flex-start;
   justify-content: center;
