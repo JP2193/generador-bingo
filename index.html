@@ -102,6 +102,13 @@
           <label>font size (px) <span id="dFont">11.5</span>px</label>
           <input type="range" id="cFont" min="4" max="18" step="0.5" value="11.5">
         </div>
+        <div class="slider-group">
+          <label>color bordes <input type="color" id="cBorderColor" value="#dc3232" style="width:36px; height:20px; border:none; padding:0; cursor:pointer; vertical-align:middle;"></label>
+        </div>
+        <div class="slider-group">
+          <label>opacidad <span id="dBorderAlpha">0.60</span></label>
+          <input type="range" id="cBorderAlpha" min="0" max="1" step="0.05" value="0.6">
+        </div>
 
         <div style="margin-top: 14px; display:flex; flex-direction:column; gap:6px;">
           <button class="btn btn-gold btn-sm" onclick="guardarCalib()">💾 Guardar valores</button>

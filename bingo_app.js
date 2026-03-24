@@ -24,7 +24,7 @@ function loadCalib() {
     const s = localStorage.getItem('bingo_calib');
     if (s) return JSON.parse(s);
   } catch(e) {}
-  return { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5 };
+  return { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5, borderColor: '#dc3232', borderAlpha: 0.6 };
 }
 
 function saveCalib(c) {
@@ -222,16 +222,18 @@ function switchTab(name) {
 let calibVisible = true;
 
 function initCalib() {
-  document.getElementById('cTop').value    = calib.top;
-  document.getElementById('cLeft').value   = calib.left;
-  document.getElementById('cWidth').value  = calib.width;
-  document.getElementById('cHeight').value = calib.height;
-  document.getElementById('cFont').value   = calib.font;
+  document.getElementById('cTop').value         = calib.top;
+  document.getElementById('cLeft').value        = calib.left;
+  document.getElementById('cWidth').value       = calib.width;
+  document.getElementById('cHeight').value      = calib.height;
+  document.getElementById('cFont').value        = calib.font;
+  document.getElementById('cBorderColor').value = calib.borderColor || '#dc3232';
+  document.getElementById('cBorderAlpha').value = calib.borderAlpha !== undefined ? calib.borderAlpha : 0.6;
   updateCalibDisplay();
   buildCalibGrid();
 }
 
-['cTop','cLeft','cWidth','cHeight','cFont'].forEach(id => {
+['cTop','cLeft','cWidth','cHeight','cFont','cBorderColor','cBorderAlpha'].forEach(id => {
   document.getElementById(id).addEventListener('input', () => {
     updateCalibFromSliders();
   });
@@ -239,27 +241,41 @@ function initCalib() {
 
 function updateCalibFromSliders() {
   calib = {
-    top:    parseFloat(document.getElementById('cTop').value),
-    left:   parseFloat(document.getElementById('cLeft').value),
-    width:  parseFloat(document.getElementById('cWidth').value),
-    height: parseFloat(document.getElementById('cHeight').value),
-    font:   parseFloat(document.getElementById('cFont').value),
+    top:         parseFloat(document.getElementById('cTop').value),
+    left:        parseFloat(document.getElementById('cLeft').value),
+    width:       parseFloat(document.getElementById('cWidth').value),
+    height:      parseFloat(document.getElementById('cHeight').value),
+    font:        parseFloat(document.getElementById('cFont').value),
+    borderColor: document.getElementById('cBorderColor').value,
+    borderAlpha: parseFloat(document.getElementById('cBorderAlpha').value),
   };
   updateCalibDisplay();
   buildCalibGrid();
 }
 
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 function updateCalibDisplay() {
-  document.getElementById('dTop').textContent    = calib.top.toFixed(1);
-  document.getElementById('dLeft').textContent   = calib.left.toFixed(1);
-  document.getElementById('dWidth').textContent  = calib.width.toFixed(1);
-  document.getElementById('dHeight').textContent = calib.height.toFixed(1);
-  document.getElementById('dFont').textContent   = calib.font;
+  document.getElementById('dTop').textContent         = calib.top.toFixed(1);
+  document.getElementById('dLeft').textContent        = calib.left.toFixed(1);
+  document.getElementById('dWidth').textContent       = calib.width.toFixed(1);
+  document.getElementById('dHeight').textContent      = calib.height.toFixed(1);
+  document.getElementById('dFont').textContent        = calib.font;
+  document.getElementById('dBorderAlpha').textContent = (calib.borderAlpha || 0.6).toFixed(2);
   const g = document.getElementById('calibGrid');
   g.style.top    = calib.top + '%';
   g.style.left   = calib.left + '%';
   g.style.width  = calib.width + '%';
   g.style.height = calib.height + '%';
+  const color = calib.borderColor || '#dc3232';
+  const alpha = calib.borderAlpha !== undefined ? calib.borderAlpha : 0.6;
+  g.style.setProperty('--calib-color',       hexToRgba(color, alpha));
+  g.style.setProperty('--calib-color-light', hexToRgba(color, alpha * 0.5));
 }
 
 function buildCalibGrid() {
@@ -292,7 +308,7 @@ function guardarCalib() {
 }
 
 function resetearCalib() {
-  calib = { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5 };
+  calib = { top: 32.1, left: 6.1, width: 88.4, height: 64.9, font: 11.5, borderColor: '#dc3232', borderAlpha: 0.6 };
   initCalib();
   saveCalib(calib);
   applyCalibToGenerator();
