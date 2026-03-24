@@ -408,10 +408,10 @@ textarea:focus {
 .grid-cell {
   border: 1px solid #e5d8c8;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   text-align: center;
-  padding: 3px 5px;
+  padding: 4px 5px 3px;
   font-family: 'Libre Baskerville', serif;
   color: #593636;
   line-height: 1.3;
@@ -489,12 +489,12 @@ input[type=range] {
 .calib-cell {
   border: 1px solid rgba(220,50,50,0.3);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   font-size: 7px;
   color: var(--text);
   text-align: center;
-  padding: 1px;
+  padding: 2px 1px 1px;
   font-family: 'Libre Baskerville', serif;
   background: rgba(255,255,255,0.4);
 }
