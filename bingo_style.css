@@ -416,6 +416,7 @@ textarea:focus {
   color: #593636;
   line-height: 1.3;
   background: transparent;
+  overflow: hidden;
 }
 
 .grid-cell.centro {
