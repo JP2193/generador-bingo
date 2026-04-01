@@ -790,14 +790,14 @@ async function generarLoteHTML() {
 
     const canvas = await html2canvas(tmp.firstChild, {
       useCORS: true,
-      scale: 1,
+      scale: 2,
       width: SHEET_W,
       height: SHEET_H,
       backgroundColor: '#fdfaf5',
       logging: false,
     });
 
-    const imgData = canvas.toDataURL('image/jpeg', 0.9);
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
     if (s > 0) pdf.addPage([420, 594], 'portrait');
     pdf.addImage(imgData, 'JPEG', 0, 0, 420, 594);
   }
