@@ -841,7 +841,7 @@ function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
       <div style="display:flex;flex-direction:column;align-items:center;padding:8px 8px 18px;flex-shrink:0;">
         <span style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24pt;color:#a8937a;text-align:center;max-width:80%;line-height:1.1;">Encontrá al invitado que...</span>
       </div>
-      <div style="display:flex;align-items:flex-end;padding:0 14px 8px;gap:6px;flex-shrink:0;">
+      <div style="display:flex;align-items:flex-end;padding:0 14px 8px;gap:6px;flex-shrink:0;max-width:58%;">
         <span style="font-family:'Jost',sans-serif;font-size:11pt;color:#5c4838;white-space:nowrap;">Tu nombre:</span>
         <span style="flex:1;border-bottom:0.8px solid #3d2b1f;display:inline-block;height:16px;min-width:60px;"></span>
       </div>
