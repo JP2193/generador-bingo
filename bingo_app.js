@@ -819,10 +819,10 @@ function buildCellsInline(frases, img5b64) {
   const cells = [];
   for (let i = 0; i < 25; i++) {
     if (i === 12) {
-      cells.push(`<div style="display:flex;align-items:center;justify-content:center;padding:4px;background:#fdfaf5;border:0.5px solid #dfd0b9;overflow:hidden;"><img src="${img5b64}" style="max-width:88%;max-height:88%;width:auto;height:auto;display:block;"></div>`);
+      cells.push(`<div style="display:flex;align-items:center;justify-content:center;padding:4px;background:#fdfaf5;border:0.5px solid #dfd0b9;border-radius:9px;overflow:hidden;margin:2px;"><img src="${img5b64}" style="max-width:88%;max-height:88%;width:auto;height:auto;display:block;"></div>`);
     } else {
       const frase = escapeHtml(frases[fi++] || '');
-      cells.push(`<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 4px 3px;text-align:center;background:#fdfaf5;border:0.5px solid #dfd0b9;border-radius:9px;overflow:hidden;"><span style="font-family:'Jost',sans-serif;font-weight:500;font-size:13pt;color:#5c4838;line-height:1.2;overflow-wrap:break-word;hyphens:auto;hyphenate-limit-chars:11 4 4;max-width:85%;padding-top:2px;">${frase}</span><div style="width:75%;border-bottom:0.7px solid #a8937a;margin-top:auto;flex-shrink:0;margin-bottom:3px;"></div></div>`);
+      cells.push(`<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 4px 3px;text-align:center;background:#fdfaf5;border:0.5px solid #dfd0b9;border-radius:9px;overflow:hidden;margin:2px;"><span style="font-family:'Jost',sans-serif;font-weight:500;font-size:13pt;color:#5c4838;line-height:1.2;overflow-wrap:break-word;hyphens:auto;hyphenate-limit-chars:11 4 4;max-width:85%;padding-top:2px;">${frase}</span><div style="width:75%;border-bottom:0.7px solid #a8937a;margin-top:auto;flex-shrink:0;margin-bottom:3px;"></div></div>`);
     }
   }
   return cells.join('');
@@ -848,7 +848,7 @@ function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
         <span style="font-family:'Jost',sans-serif;font-size:11pt;color:#5c4838;white-space:nowrap;">Tu nombre:</span>
         <span style="flex:1;border-bottom:0.8px solid #3d2b1f;display:inline-block;height:16px;min-width:60px;"></span>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);flex:1;background:transparent;gap:4px;margin:0 8px ${gridMarginB}px;border-radius:15px;overflow:hidden;">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);flex:1;background:transparent;gap:0;margin:0 8px ${gridMarginB}px;">
         ${buildCellsInline(frases, img5b64)}
       </div>
       <div style="position:absolute;bottom:0;left:0;width:${cornerW}px;height:${cornerH}px;overflow:hidden;">
