@@ -741,7 +741,7 @@ const SHEET_H = 2244;
 async function generarLoteHTML() {
   if (!frasesXLS) { showError('Las frases no están cargadas aún.'); return; }
 
-  const TOTAL   = parseInt(document.getElementById('loteCount')?.textContent) || 50;
+  const TOTAL   = parseInt(document.getElementById('loteCount')?.value) || 50;
   const nSheets = Math.ceil(TOTAL / 4);
   const progress = document.getElementById('progressMsg');
   progress.style.display = 'block';
@@ -861,8 +861,8 @@ function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
 function cambiarLote(delta) {
   const el = document.getElementById('loteCount');
   if (!el) return;
-  const val = Math.min(150, Math.max(10, (parseInt(el.textContent) || 50) + delta));
-  el.textContent = val;
+  const val = Math.min(600, Math.max(4, (parseInt(el.value) || 50) + delta));
+  el.value = val;
 }
 
 // ── EXPORTAR LOTE ──
@@ -873,7 +873,7 @@ async function generarLote() {
   }
   if (!frasesXLS) { showError('Las frases no están cargadas aún.'); return; }
 
-  const TOTAL = parseInt(document.getElementById('loteCount')?.textContent) || 50;
+  const TOTAL = parseInt(document.getElementById('loteCount')?.value) || 50;
   const zip = new JSZip();
   const progress = document.getElementById('progressMsg');
   progress.style.display = 'block';

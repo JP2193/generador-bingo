@@ -48,7 +48,7 @@
         <button class="btn btn-outline lote-export-btn" onclick="generarLote()">🗂 Exportar lote</button>
         <div class="stepper">
           <button class="stepper-btn" onclick="cambiarLote(-10)">−</button>
-          <span id="loteCount" class="stepper-value">50</span>
+          <input id="loteCount" class="stepper-value" type="number" value="50" min="4" max="600" step="4">
           <button class="stepper-btn" onclick="cambiarLote(10)">+</button>
         </div>
       </div>

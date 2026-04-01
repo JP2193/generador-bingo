@@ -372,16 +372,21 @@ textarea:focus {
 .stepper-btn:hover { background: var(--gold-light); }
 
 .stepper-value {
-  min-width: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-width: 52px;
+  width: 52px;
+  text-align: center;
   font-family: var(--font-ui);
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--brand);
   background: transparent;
-  user-select: none;
+  border: none;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.stepper-value::-webkit-outer-spin-button,
+.stepper-value::-webkit-inner-spin-button {
+  -webkit-appearance: none;
 }
 
 /* ── MENSAJES ── */
