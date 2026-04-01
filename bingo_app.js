@@ -685,6 +685,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       line-height: 1.25;
       overflow-wrap: break-word;
       hyphens: auto;
+      hyphenate-limit-chars: 9 4 3;
       max-width: 80%;
       padding-top: 1mm;
     }
