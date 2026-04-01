@@ -551,8 +551,8 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       width: 420mm;
       height: 594mm;
       margin: 0 auto;
-      padding: 10mm;
-      gap: 8mm;
+      padding: 0;
+      gap: 0;
     }
 
     @media print {
@@ -561,7 +561,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
         width: 420mm;
         height: 594mm;
         margin: 0;
-        padding: 8mm;
+        padding: 0;
         page-break-after: always;
       }
     }
