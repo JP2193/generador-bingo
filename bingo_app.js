@@ -793,7 +793,7 @@ async function generarLoteHTML() {
 
     const canvas = await html2canvas(tmp.firstChild, {
       useCORS: true,
-      scale: 2,
+      scale: 3,
       width: SHEET_W,
       height: SHEET_H,
       backgroundColor: '#fdfaf5',
