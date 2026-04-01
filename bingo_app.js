@@ -644,13 +644,11 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       grid-template-columns: repeat(5, 1fr);
       grid-template-rows: repeat(5, 1fr);
       flex: 1;
-      background: #dfd0b9;
-      gap: 0;
-      border-top: 1px solid #dfd0b9;
+      background: transparent;
+      gap: 1mm;
+      border-top: none;
       margin: 0 4mm;
       margin-bottom: 28mm;
-      border-radius: 4mm;
-      overflow: hidden;
     }
 
     .celda {
@@ -662,6 +660,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       text-align: center;
       background: #fdfaf5;
       border: 0.5px solid #dfd0b9;
+      border-radius: 2.5mm;
       overflow: hidden;
     }
 
