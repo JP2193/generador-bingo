@@ -733,11 +733,15 @@ ${cartones}
 </html>`;
 }
 
-// ── EXPORTAR LOTE HTML ──
+// ── EXPORTAR LOTE PDF ──
+// Dimensiones de plancha en px a 96dpi: A2 = 420×594mm
+const SHEET_W = 1587;
+const SHEET_H = 2244;
+
 async function generarLoteHTML() {
   if (!frasesXLS) { showError('Las frases no están cargadas aún.'); return; }
 
-  const TOTAL  = parseInt(document.getElementById('loteCount')?.textContent) || 50;
+  const TOTAL   = parseInt(document.getElementById('loteCount')?.textContent) || 50;
   const nSheets = Math.ceil(TOTAL / 4);
   const progress = document.getElementById('progressMsg');
   progress.style.display = 'block';
@@ -757,135 +761,100 @@ async function generarLoteHTML() {
   }
   const [img4b64, img5b64, img6b64] = imgs;
 
-  // Generar todos los sets de frases (4 por plancha)
+  // Generar todos los sets de frases
   const allSets = [];
   for (let i = 0; i < nSheets * 4; i++) {
     const frases = generarFrases();
     if (!frases) { progress.style.display = 'none'; return; }
     allSets.push(frases);
-    if (i % 20 === 0) progress.textContent = `⏳ Generando cartones... ${i}/${nSheets * 4}`;
   }
 
-  progress.textContent = '🖨 Armando PDF...';
-  const htmlContent = buildLoteHTML(allSets, nSheets, img4b64, img5b64, img6b64);
-  const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `cartones-bingo-lote-${TOTAL}.html`;
-  link.click();
-  URL.revokeObjectURL(link.href);
+  // Contenedor temporal off-screen para renderizar cada plancha
+  const tmp = document.createElement('div');
+  tmp.style.cssText = `position:absolute;top:0;left:-${SHEET_W + 20}px;width:${SHEET_W}px;height:${SHEET_H}px;overflow:hidden;`;
+  document.body.appendChild(tmp);
 
-  progress.textContent = `✅ ¡Listo! ${nSheets} planchas (${TOTAL} cartones) descargadas.`;
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [420, 594] });
+
+  for (let s = 0; s < nSheets; s++) {
+    progress.textContent = `⏳ Renderizando plancha ${s + 1} de ${nSheets}...`;
+
+    const grupo = allSets.slice(s * 4, s * 4 + 4);
+    while (grupo.length < 4) grupo.push(grupo[0]);
+
+    tmp.innerHTML = buildSheetDOM(grupo, img4b64, img5b64, img6b64);
+    await new Promise(r => setTimeout(r, 80));
+
+    const canvas = await html2canvas(tmp.firstChild, {
+      useCORS: true,
+      scale: 1,
+      width: SHEET_W,
+      height: SHEET_H,
+      backgroundColor: '#fdfaf5',
+      logging: false,
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.9);
+    if (s > 0) pdf.addPage([420, 594], 'portrait');
+    pdf.addImage(imgData, 'JPEG', 0, 0, 420, 594);
+  }
+
+  document.body.removeChild(tmp);
+
+  progress.textContent = '📦 Generando PDF...';
+  pdf.save(`cartones-bingo-${TOTAL}.pdf`);
+
+  progress.textContent = `✅ ¡Listo! ${nSheets} planchas · ${TOTAL} cartones.`;
   setTimeout(() => { progress.style.display = 'none'; }, 3500);
 }
 
-function buildPlanchaMarkup(cuatroSets, img4b64, img5b64, img6b64) {
-  return cuatroSets.map(frases => `
-    <div class="carton-page">
-      <div class="carton-wrap">
-        <div class="floral-top"><img src="${img4b64}" alt="flores"></div>
-        <div class="carton-titulo">
-          <span class="titulo-principal">Encontrá al invitado que...</span>
-        </div>
-        <div class="nombre-field">
-          <span class="nombre-label">Tu nombre:</span>
-          <span class="nombre-linea"></span>
-        </div>
-        <div class="grid">
-          ${buildCartonSVG(frases, img5b64)}
-        </div>
-        <div class="floral-corner floral-left"><img src="${img6b64}" alt=""></div>
-        <div class="floral-corner floral-right"><img src="${img6b64}" alt=""></div>
-      </div>
-    </div>`).join('\n');
+function buildCellsInline(frases, img5b64) {
+  let fi = 0;
+  const cells = [];
+  for (let i = 0; i < 25; i++) {
+    if (i === 12) {
+      cells.push(`<div style="display:flex;align-items:center;justify-content:center;padding:4px;background:#fdfaf5;border:0.5px solid #dfd0b9;overflow:hidden;"><img src="${img5b64}" style="width:100%;height:100%;object-fit:contain;"></div>`);
+    } else {
+      const frase = escapeHtml(frases[fi++] || '');
+      cells.push(`<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 4px 3px;text-align:center;background:#fdfaf5;border:0.5px solid #dfd0b9;overflow:hidden;"><span style="font-family:'Jost',sans-serif;font-weight:500;font-size:13pt;color:#5c4838;line-height:1.2;word-break:break-word;max-width:85%;padding-top:2px;">${frase}</span><div style="width:75%;border-bottom:0.7px solid #a8937a;margin-top:auto;flex-shrink:0;margin-bottom:3px;"></div></div>`);
+    }
+  }
+  return cells.join('');
 }
 
-function buildLoteHTML(allSets, nSheets, img4b64, img5b64, img6b64) {
-  const sheets = [];
-  for (let s = 0; s < nSheets; s++) {
-    const grupo = allSets.slice(s * 4, s * 4 + 4);
-    // Si el último grupo tiene menos de 4, rellenar con sets repetidos
-    while (grupo.length < 4) grupo.push(grupo[0]);
-    sheets.push(`<div class="print-sheet">${buildPlanchaMarkup(grupo, img4b64, img5b64, img6b64)}</div>`);
-  }
+function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
+  const cW = SHEET_W / 2;
+  const cH = SHEET_H / 2;
+  const cornerW = Math.round(cW * 0.19);
+  const cornerH = Math.round(cH * 0.12);
+  const gridMarginB = cornerH + 8;
+  const floralH = Math.round(cH * 0.13);
 
-  return `<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Lote Cartones Bingo — Clara &amp; Javier</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #f2ebe0; font-family: 'Jost', sans-serif; }
+  const cartones = grupo.map(frases => `
+    <div style="position:relative;display:flex;flex-direction:column;width:${cW}px;height:${cH}px;background:#fdfaf5;overflow:hidden;border:1px solid #dfd0b9;">
+      <div style="width:100%;flex-shrink:0;overflow:hidden;line-height:0;">
+        <img src="${img4b64}" style="width:100%;display:block;object-fit:cover;object-position:top center;max-height:${floralH}px;">
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 8px 18px;flex-shrink:0;">
+        <span style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24pt;color:#a8937a;text-align:center;max-width:80%;line-height:1.1;">Encontrá al invitado que...</span>
+      </div>
+      <div style="display:flex;align-items:flex-end;padding:0 14px 8px;gap:6px;flex-shrink:0;">
+        <span style="font-family:'Jost',sans-serif;font-size:11pt;color:#5c4838;white-space:nowrap;">Tu nombre:</span>
+        <span style="flex:1;border-bottom:0.8px solid #3d2b1f;display:inline-block;height:16px;min-width:60px;"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);flex:1;background:#dfd0b9;margin:0 8px ${gridMarginB}px;border-top:1px solid #dfd0b9;">
+        ${buildCellsInline(frases, img5b64)}
+      </div>
+      <div style="position:absolute;bottom:0;left:0;width:${cornerW}px;height:${cornerH}px;overflow:hidden;">
+        <img src="${img6b64}" style="width:150%;height:auto;display:block;">
+      </div>
+      <div style="position:absolute;bottom:0;right:0;width:${cornerW}px;height:${cornerH}px;overflow:hidden;transform:scaleX(-1);">
+        <img src="${img6b64}" style="width:150%;height:auto;display:block;">
+      </div>
+    </div>`).join('');
 
-    .print-sheet {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      width: 420mm;
-      height: 594mm;
-      margin: 0 auto;
-      padding: 0;
-      gap: 0;
-    }
-
-    @media print {
-      body { background: white; }
-      .print-sheet {
-        width: 420mm;
-        height: 594mm;
-        margin: 0;
-        padding: 0;
-        page-break-after: always;
-        break-after: page;
-      }
-      .print-sheet:last-child {
-        page-break-after: avoid;
-        break-after: avoid;
-      }
-    }
-
-    .carton-page {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      background: #fdfaf5;
-      overflow: hidden;
-      border: 1px solid #dfd0b9;
-    }
-    .carton-wrap {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-    .floral-top { width: 100%; flex-shrink: 0; overflow: hidden; line-height: 0; }
-    .floral-top img { width: 100%; display: block; object-fit: cover; object-position: top center; max-height: 40mm; }
-    .carton-titulo { display: flex; flex-direction: column; align-items: center; padding: 3mm 4mm 9mm; flex-shrink: 0; }
-    .titulo-principal { font-family: 'Cormorant Garamond', serif; font-style: normal; font-weight: 700; font-size: 26pt; color: #a8937a; line-height: 1.1; max-width: 80%; text-align: center; }
-    .nombre-field { display: flex; align-items: baseline; padding: 2mm 5mm 2mm; gap: 2mm; flex-shrink: 0; max-width: 58%; }
-    .nombre-label { font-family: 'Jost', sans-serif; font-size: 11.5pt; font-weight: 400; color: #5c4838; white-space: nowrap; }
-    .nombre-linea { flex: 1; border-bottom: 0.8px solid #3d2b1f; min-width: 30mm; }
-    .grid { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); flex: 1; background: #dfd0b9; gap: 0; border-top: 1px solid #dfd0b9; margin: 0 4mm; margin-bottom: 28mm; }
-    .celda { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 2mm 2mm 1.5mm; text-align: center; background: #fdfaf5; border: 0.5px solid #dfd0b9; overflow: hidden; }
-    .celda.centro { justify-content: center; padding: 2mm; }
-    .celda.centro img { width: 100%; height: 100%; object-fit: contain; }
-    .frase-txt { font-family: 'Jost', sans-serif; font-weight: 500; font-size: 14pt; color: #5c4838; line-height: 1.25; word-break: break-word; max-width: 80%; padding-top: 1mm; }
-    .firma-linea { width: 75%; border-bottom: 0.7px solid #a8937a; margin-top: auto; flex-shrink: 0; margin-bottom: 1.5mm; }
-    .floral-corner { position: absolute; bottom: 0; overflow: hidden; pointer-events: none; width: 45mm; height: 26mm; line-height: 0; }
-    .floral-left { left: 0; }
-    .floral-right { right: 0; transform: scaleX(-1); transform-origin: center; }
-    .floral-corner img { width: 150%; height: auto; display: block; }
-  </style>
-</head>
-<body>
-${sheets.join('\n')}
-<script>
-  window.onload = () => setTimeout(() => window.print(), 600);
-<\/script>
-</body>
-</html>`;
+  return `<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;width:${SHEET_W}px;height:${SHEET_H}px;background:#fdfaf5;">${cartones}</div>`;
 }
 
 // ── LOTE STEPPER ──
