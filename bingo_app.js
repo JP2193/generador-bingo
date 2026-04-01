@@ -595,6 +595,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       object-fit: cover;
       object-position: top center;
       max-height: 40mm;
+      filter: contrast(1.15) saturate(1.1);
     }
 
     .carton-titulo {
@@ -610,7 +611,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       font-style: normal;
       font-weight: 700;
       font-size: 26pt;
-      color: #a8937a;
+      color: #6b4410;
       line-height: 1.1;
       max-width: 80%;
       text-align: center;
@@ -629,7 +630,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       font-family: 'Jost', sans-serif;
       font-size: 11.5pt;
       font-weight: 400;
-      color: #5c4838;
+      color: #3a2010;
       white-space: nowrap;
     }
 
@@ -659,7 +660,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       padding: 2mm 2mm 1.5mm;
       text-align: center;
       background: #fdfaf5;
-      border: 0.5px solid #dfd0b9;
+      border: 0.5px solid rgba(140, 100, 60, 0.75);
       border-radius: 2.5mm;
       overflow: hidden;
     }
@@ -681,7 +682,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       font-family: 'Jost', sans-serif;
       font-weight: 500;
       font-size: 14pt;
-      color: #5c4838;
+      color: #3a2010;
       line-height: 1.25;
       overflow-wrap: break-word;
       hyphens: auto;
@@ -692,7 +693,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
 
     .firma-linea {
       width: 75%;
-      border-bottom: 0.7px solid #a8937a;
+      border-bottom: 0.7px solid #8a6830;
       margin-top: auto;
       flex-shrink: 0;
       margin-bottom: 1.5mm;
@@ -822,7 +823,7 @@ function buildCellsInline(frases, img5b64) {
       cells.push(`<div style="display:flex;align-items:center;justify-content:center;padding:4px;background:#fdfaf5;border:0.5px solid #dfd0b9;border-radius:9px;overflow:hidden;margin:2px;"><img src="${img5b64}" style="max-width:88%;max-height:88%;width:auto;height:auto;display:block;"></div>`);
     } else {
       const frase = escapeHtml(frases[fi++] || '');
-      cells.push(`<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 4px 3px;text-align:center;background:#fdfaf5;border:0.5px solid #dfd0b9;border-radius:9px;overflow:hidden;margin:2px;"><span style="font-family:'Jost',sans-serif;font-weight:500;font-size:13pt;color:#5c4838;line-height:1.2;overflow-wrap:break-word;hyphens:auto;hyphenate-limit-chars:11 4 4;max-width:85%;padding-top:2px;">${frase}</span><div style="width:75%;border-bottom:0.7px solid #a8937a;margin-top:auto;flex-shrink:0;margin-bottom:3px;"></div></div>`);
+      cells.push(`<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 4px 3px;text-align:center;background:#fdfaf5;border:0.5px solid rgba(140,100,60,0.75);border-radius:9px;overflow:hidden;margin:2px;"><span style="font-family:'Jost',sans-serif;font-weight:500;font-size:13pt;color:#3a2010;line-height:1.2;overflow-wrap:break-word;hyphens:auto;hyphenate-limit-chars:11 4 4;max-width:85%;padding-top:2px;">${frase}</span><div style="width:75%;border-bottom:0.7px solid #8a6830;margin-top:auto;flex-shrink:0;margin-bottom:3px;"></div></div>`);
     }
   }
   return cells.join('');
@@ -839,13 +840,13 @@ function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
   const cartones = grupo.map(frases => `
     <div style="position:relative;display:flex;flex-direction:column;width:${cW}px;height:${cH}px;background:#fdfaf5;overflow:hidden;border:1px solid #dfd0b9;">
       <div style="width:100%;flex-shrink:0;overflow:hidden;line-height:0;">
-        <img src="${img4b64}" style="width:100%;display:block;object-fit:cover;object-position:top center;max-height:${floralH}px;">
+        <img src="${img4b64}" style="width:100%;display:block;object-fit:cover;object-position:top center;max-height:${floralH}px;filter:contrast(1.15) saturate(1.1);">
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;padding:8px 8px 18px;flex-shrink:0;">
-        <span style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24pt;color:#a8937a;text-align:center;max-width:80%;line-height:1.1;">Encontrá al invitado que...</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24pt;color:#6b4410;text-align:center;max-width:80%;line-height:1.1;">Encontrá al invitado que...</span>
       </div>
       <div style="display:flex;align-items:flex-end;padding:0 14px 8px;gap:6px;flex-shrink:0;max-width:58%;">
-        <span style="font-family:'Jost',sans-serif;font-size:11pt;color:#5c4838;white-space:nowrap;">Tu nombre:</span>
+        <span style="font-family:'Jost',sans-serif;font-size:11pt;color:#3a2010;white-space:nowrap;">Tu nombre:</span>
         <span style="flex:1;border-bottom:0.8px solid #3d2b1f;display:inline-block;height:16px;min-width:60px;"></span>
       </div>
       <div style="display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);flex:1;background:transparent;gap:0;margin:0 8px ${gridMarginB}px;">
