@@ -602,7 +602,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 3mm 4mm 14mm;
+      padding: 6mm 4mm 17mm;
       flex-shrink: 0;
     }
 
@@ -850,7 +850,7 @@ function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
         <span style="font-family:'Jost',sans-serif;font-size:13.5pt;font-weight:600;color:#3a2010;white-space:nowrap;">Tu nombre:</span>
         <span style="flex:1;border-bottom:0.8px solid #3d2b1f;display:inline-block;height:16px;min-width:60px;"></span>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 8px 32px;flex-shrink:0;">
+      <div style="display:flex;flex-direction:column;align-items:center;padding:18px 8px 42px;flex-shrink:0;">
         <span style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:26pt;color:#6b4410;text-align:center;max-width:80%;line-height:1.1;margin:1px 0;display:block;">Encontrá al invitado que...</span>
       </div>
       <div style="position:absolute;bottom:0;left:0;width:${cornerW}px;height:${cornerH}px;overflow:hidden;z-index:0;">
