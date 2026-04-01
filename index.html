@@ -29,9 +29,19 @@
       <div class="dist-item"><label>🟡 Medias</label><input type="number" id="nMedia" value="7" min="0" max="24"></div>
       <div class="dist-item"><label>🔴 Difíciles</label><input type="number" id="nDificil" value="3" min="0" max="24"></div>
     </div>
+
+    <div class="formato-selector">
+      <label class="formato-label">
+        <input type="radio" name="formatoSalida" value="jpg" checked> JPG
+      </label>
+      <label class="formato-label">
+        <input type="radio" name="formatoSalida" value="html"> HTML genérico (4 cartones)
+      </label>
+    </div>
+
     <div class="btn-grid">
-      <button class="btn btn-primary" onclick="generarTarjeta()">✦ Generar tarjeta</button>
-      <button class="btn btn-outline" onclick="generarTarjeta()">↺ Otra aleatoria</button>
+      <button class="btn btn-primary" onclick="accionGenerar()">✦ Generar tarjeta</button>
+      <button class="btn btn-outline" onclick="accionGenerar()">↺ Otra aleatoria</button>
       <button class="btn btn-gold"    onclick="guardarImagen()">💾 Guardar</button>
       <div class="lote-group">
         <button class="btn btn-outline lote-export-btn" onclick="generarLote()">🗂 Exportar lote</button>

@@ -412,12 +412,305 @@ function buildGrid(todas) {
   }
 }
 
+function getFormatoSalida() {
+  const sel = document.querySelector('input[name="formatoSalida"]:checked');
+  return sel ? sel.value : 'jpg';
+}
+
+function accionGenerar() {
+  if (getFormatoSalida() === 'html') {
+    generarHTML();
+  } else {
+    generarTarjeta();
+  }
+}
+
 function generarTarjeta() {
   const todas = generarFrases();
   if (!todas) return;
   buildGrid(todas);
   document.getElementById('previewArea').style.display = 'block';
   document.getElementById('previewArea').scrollIntoView({behavior:'smooth'});
+}
+
+// ── GENERAR HTML GENÉRICO (4 cartones estilo app-carton) ──
+function generarHTML() {
+  if (!frasesXLS) { showError('Las frases no están cargadas aún.'); return; }
+
+  // Generamos 4 sets de 24 frases (pueden repetirse entre cartones)
+  const sets = [];
+  for (let i = 0; i < 4; i++) {
+    const frases = generarFrases();
+    if (!frases) return;
+    sets.push(frases);
+  }
+
+  // Convertir imagen a base64 para embeber en el HTML
+  Promise.all([
+    imgToBase64('img/4.png'),
+    imgToBase64('img/1.png'),
+  ]).then(([img4b64, img1b64]) => {
+    const htmlContent = buildCartonHTML(sets, img4b64, img1b64);
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'cartones-bingo.html';
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }).catch(err => {
+    showError('Error al generar el HTML: ' + err.message);
+  });
+}
+
+function imgToBase64(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = () => reject(new Error('No se pudo cargar ' + src));
+    img.src = src + '?t=' + Date.now();
+  });
+}
+
+function buildCartonSVG(frases, img1b64) {
+  // Genera el HTML de un cartón 5x5 individual
+  const cells = [];
+  let fi = 0;
+  for (let i = 0; i < 25; i++) {
+    if (i === 12) {
+      cells.push(`<div class="celda centro"><img src="${img1b64}" alt="centro"></div>`);
+    } else {
+      const frase = frases[fi++] || '';
+      cells.push(`<div class="celda"><span class="frase-txt">${escapeHtml(frase)}</span></div>`);
+    }
+  }
+  return cells.join('\n');
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function buildCartonHTML(sets, img4b64, img1b64) {
+  const cartones = sets.map((frases, idx) => `
+    <div class="carton-page">
+      <div class="carton-wrap">
+
+        <div class="floral-top">
+          <img src="${img4b64}" alt="flores">
+        </div>
+
+        <div class="carton-titulo">
+          <span class="titulo-principal">Bingo Humano</span>
+          <span class="titulo-sub">Clara &amp; Javier · ${new Date().getFullYear()}</span>
+        </div>
+
+        <div class="grid">
+          ${buildCartonSVG(frases, img1b64)}
+        </div>
+
+        <div class="floral-corner floral-left">
+          <img src="${img4b64}" alt="">
+        </div>
+        <div class="floral-corner floral-right">
+          <img src="${img4b64}" alt="">
+        </div>
+
+      </div>
+    </div>
+  `).join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cartones Bingo — Clara &amp; Javier</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f2ebe0;
+      font-family: 'Jost', sans-serif;
+    }
+
+    /* ── Página de impresión: 2 cartones por hoja A3 horizontal ── */
+    .print-sheet {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      width: 420mm;
+      height: 594mm; /* A3 landscape = 2 hojas A3 portrait apiladas */
+      margin: 0 auto;
+      padding: 10mm;
+      gap: 8mm;
+    }
+
+    @media print {
+      body { background: white; }
+      .print-sheet {
+        width: 420mm;
+        height: 594mm;
+        margin: 0;
+        padding: 8mm;
+        page-break-after: always;
+      }
+    }
+
+    /* ── Cartón individual ── */
+    .carton-page {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: #fdfaf5;
+      overflow: hidden;
+      border: 1px solid #dfd0b9;
+    }
+
+    .carton-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* ── Flores arriba ── */
+    .floral-top {
+      width: 100%;
+      flex-shrink: 0;
+      overflow: hidden;
+      line-height: 0;
+    }
+
+    .floral-top img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: top center;
+      max-height: 22mm;
+    }
+
+    /* ── Título ── */
+    .carton-titulo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 4mm 4mm 3mm;
+      flex-shrink: 0;
+    }
+
+    .titulo-principal {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 18pt;
+      color: #3d2b1f;
+      line-height: 1;
+    }
+
+    .titulo-sub {
+      font-family: 'Jost', sans-serif;
+      font-size: 7pt;
+      font-weight: 300;
+      color: #9e8a72;
+      letter-spacing: 0.1em;
+      margin-top: 1mm;
+    }
+
+    /* ── Grilla ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      flex: 1;
+      background: #dfd0b9;
+      gap: 0;
+      border-top: 1px solid #dfd0b9;
+      margin: 0 4mm;
+      margin-bottom: 14mm; /* espacio para las flores de esquina */
+    }
+
+    .celda {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2mm 2mm;
+      text-align: center;
+      background: #fdfaf5;
+      border: 0.5px solid #dfd0b9;
+      overflow: hidden;
+    }
+
+    .celda.centro {
+      padding: 3mm;
+    }
+
+    .celda.centro img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .frase-txt {
+      font-family: 'Jost', sans-serif;
+      font-weight: 500;
+      font-size: 6.5pt;
+      color: #3d2b1f;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    /* ── Flores esquinas inferiores ── */
+    .floral-corner {
+      position: absolute;
+      bottom: 0;
+      width: 30mm;
+      height: 22mm;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .floral-left {
+      left: 0;
+    }
+
+    .floral-right {
+      right: 0;
+    }
+
+    .floral-corner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: bottom center;
+    }
+
+    .floral-left img {
+      transform: scaleX(-1);
+      transform-origin: center;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="print-sheet">
+${cartones}
+</div>
+
+<script>
+  // Abrir diálogo de impresión/guardar como PDF automáticamente
+  window.onload = () => setTimeout(() => window.print(), 600);
+<\/script>
+
+</body>
+</html>`;
 }
 
 // ── LOTE STEPPER ──
