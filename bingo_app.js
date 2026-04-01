@@ -448,9 +448,10 @@ function generarHTML() {
   // Convertir imagen a base64 para embeber en el HTML
   Promise.all([
     imgToBase64('img/4.png'),
-    imgToBase64('img/1.png'),
-  ]).then(([img4b64, img1b64]) => {
-    const htmlContent = buildCartonHTML(sets, img4b64, img1b64);
+    imgToBase64('img/5.png'),
+    imgToBase64('img/6.png'),
+  ]).then(([img4b64, img5b64, img6b64]) => {
+    const htmlContent = buildCartonHTML(sets, img4b64, img5b64, img6b64);
     const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -478,16 +479,15 @@ function imgToBase64(src) {
   });
 }
 
-function buildCartonSVG(frases, img1b64) {
-  // Genera el HTML de un cartón 5x5 individual
+function buildCartonSVG(frases, img5b64) {
   const cells = [];
   let fi = 0;
   for (let i = 0; i < 25; i++) {
     if (i === 12) {
-      cells.push(`<div class="celda centro"><img src="${img1b64}" alt="centro"></div>`);
+      cells.push(`<div class="celda centro"><img src="${img5b64}" alt="centro"></div>`);
     } else {
       const frase = frases[fi++] || '';
-      cells.push(`<div class="celda"><span class="frase-txt">${escapeHtml(frase)}</span></div>`);
+      cells.push(`<div class="celda"><span class="frase-txt">${escapeHtml(frase)}</span><div class="firma-linea"></div></div>`);
     }
   }
   return cells.join('\n');
@@ -497,8 +497,8 @@ function escapeHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function buildCartonHTML(sets, img4b64, img1b64) {
-  const cartones = sets.map((frases, idx) => `
+function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
+  const cartones = sets.map((frases) => `
     <div class="carton-page">
       <div class="carton-wrap">
 
@@ -507,19 +507,23 @@ function buildCartonHTML(sets, img4b64, img1b64) {
         </div>
 
         <div class="carton-titulo">
-          <span class="titulo-principal">Bingo Humano</span>
-          <span class="titulo-sub">Clara &amp; Javier · ${new Date().getFullYear()}</span>
+          <span class="titulo-principal">Encontrá al invitado que...</span>
+        </div>
+
+        <div class="nombre-field">
+          <span class="nombre-label">Tu nombre:</span>
+          <span class="nombre-linea"></span>
         </div>
 
         <div class="grid">
-          ${buildCartonSVG(frases, img1b64)}
+          ${buildCartonSVG(frases, img5b64)}
         </div>
 
         <div class="floral-corner floral-left">
-          <img src="${img4b64}" alt="">
+          <img src="${img6b64}" alt="">
         </div>
         <div class="floral-corner floral-right">
-          <img src="${img4b64}" alt="">
+          <img src="${img6b64}" alt="">
         </div>
 
       </div>
@@ -531,7 +535,7 @@ function buildCartonHTML(sets, img4b64, img1b64) {
 <head>
   <meta charset="UTF-8">
   <title>Cartones Bingo — Clara &amp; Javier</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -540,13 +544,12 @@ function buildCartonHTML(sets, img4b64, img1b64) {
       font-family: 'Jost', sans-serif;
     }
 
-    /* ── Página de impresión: 2 cartones por hoja A3 horizontal ── */
     .print-sheet {
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
       width: 420mm;
-      height: 594mm; /* A3 landscape = 2 hojas A3 portrait apiladas */
+      height: 594mm;
       margin: 0 auto;
       padding: 10mm;
       gap: 8mm;
@@ -563,7 +566,6 @@ function buildCartonHTML(sets, img4b64, img1b64) {
       }
     }
 
-    /* ── Cartón individual ── */
     .carton-page {
       position: relative;
       display: flex;
@@ -580,7 +582,6 @@ function buildCartonHTML(sets, img4b64, img1b64) {
       height: 100%;
     }
 
-    /* ── Flores arriba ── */
     .floral-top {
       width: 100%;
       flex-shrink: 0;
@@ -593,37 +594,51 @@ function buildCartonHTML(sets, img4b64, img1b64) {
       display: block;
       object-fit: cover;
       object-position: top center;
-      max-height: 22mm;
+      max-height: 40mm;
     }
 
-    /* ── Título ── */
     .carton-titulo {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 4mm 4mm 3mm;
+      padding: 3mm 4mm 9mm;
       flex-shrink: 0;
     }
 
     .titulo-principal {
       font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-weight: 600;
-      font-size: 18pt;
-      color: #3d2b1f;
-      line-height: 1;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 26pt;
+      color: #a8937a;
+      line-height: 1.1;
+      max-width: 80%;
+      text-align: center;
     }
 
-    .titulo-sub {
+    .nombre-field {
+      display: flex;
+      align-items: baseline;
+      padding: 2mm 5mm 2mm;
+      gap: 2mm;
+      flex-shrink: 0;
+      max-width: 58%;
+    }
+
+    .nombre-label {
       font-family: 'Jost', sans-serif;
-      font-size: 7pt;
-      font-weight: 300;
-      color: #9e8a72;
-      letter-spacing: 0.1em;
-      margin-top: 1mm;
+      font-size: 11.5pt;
+      font-weight: 400;
+      color: #5c4838;
+      white-space: nowrap;
     }
 
-    /* ── Grilla ── */
+    .nombre-linea {
+      flex: 1;
+      border-bottom: 0.8px solid #3d2b1f;
+      min-width: 30mm;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -633,14 +648,15 @@ function buildCartonHTML(sets, img4b64, img1b64) {
       gap: 0;
       border-top: 1px solid #dfd0b9;
       margin: 0 4mm;
-      margin-bottom: 14mm; /* espacio para las flores de esquina */
+      margin-bottom: 28mm;
     }
 
     .celda {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 2mm 2mm;
+      justify-content: flex-start;
+      padding: 2mm 2mm 1.5mm;
       text-align: center;
       background: #fdfaf5;
       border: 0.5px solid #dfd0b9;
@@ -648,7 +664,8 @@ function buildCartonHTML(sets, img4b64, img1b64) {
     }
 
     .celda.centro {
-      padding: 3mm;
+      justify-content: center;
+      padding: 2mm;
     }
 
     .celda.centro img {
@@ -660,40 +677,44 @@ function buildCartonHTML(sets, img4b64, img1b64) {
     .frase-txt {
       font-family: 'Jost', sans-serif;
       font-weight: 500;
-      font-size: 6.5pt;
-      color: #3d2b1f;
+      font-size: 14pt;
+      color: #5c4838;
       line-height: 1.25;
       word-break: break-word;
+      max-width: 80%;
+      padding-top: 1mm;
     }
 
-    /* ── Flores esquinas inferiores ── */
+    .firma-linea {
+      width: 75%;
+      border-bottom: 0.7px solid #a8937a;
+      margin-top: auto;
+      flex-shrink: 0;
+      margin-bottom: 1.5mm;
+    }
+
     .floral-corner {
       position: absolute;
       bottom: 0;
-      width: 30mm;
-      height: 22mm;
       overflow: hidden;
       pointer-events: none;
+      width: 45mm;
+      height: 26mm;
+      line-height: 0;
     }
 
-    .floral-left {
-      left: 0;
-    }
+    .floral-left { left: 0; }
 
     .floral-right {
       right: 0;
+      transform: scaleX(-1);
+      transform-origin: center;
     }
 
     .floral-corner img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: bottom center;
-    }
-
-    .floral-left img {
-      transform: scaleX(-1);
-      transform-origin: center;
+      width: 150%;
+      height: auto;
+      display: block;
     }
 
   </style>
@@ -705,7 +726,6 @@ ${cartones}
 </div>
 
 <script>
-  // Abrir diálogo de impresión/guardar como PDF automáticamente
   window.onload = () => setTimeout(() => window.print(), 600);
 <\/script>
 
