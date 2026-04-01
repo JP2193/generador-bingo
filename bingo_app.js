@@ -669,9 +669,11 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
     }
 
     .celda.centro img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+      max-width: 88%;
+      max-height: 88%;
+      width: auto;
+      height: auto;
+      display: block;
     }
 
     .frase-txt {
@@ -814,7 +816,7 @@ function buildCellsInline(frases, img5b64) {
   const cells = [];
   for (let i = 0; i < 25; i++) {
     if (i === 12) {
-      cells.push(`<div style="display:flex;align-items:center;justify-content:center;padding:4px;background:#fdfaf5;border:0.5px solid #dfd0b9;overflow:hidden;"><img src="${img5b64}" style="width:100%;height:100%;object-fit:contain;"></div>`);
+      cells.push(`<div style="display:flex;align-items:center;justify-content:center;padding:4px;background:#fdfaf5;border:0.5px solid #dfd0b9;overflow:hidden;"><img src="${img5b64}" style="max-width:88%;max-height:88%;width:auto;height:auto;display:block;"></div>`);
     } else {
       const frase = escapeHtml(frases[fi++] || '');
       cells.push(`<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 4px 3px;text-align:center;background:#fdfaf5;border:0.5px solid #dfd0b9;overflow:hidden;"><span style="font-family:'Jost',sans-serif;font-weight:500;font-size:13pt;color:#5c4838;line-height:1.2;word-break:break-word;max-width:85%;padding-top:2px;">${frase}</span><div style="width:75%;border-bottom:0.7px solid #a8937a;margin-top:auto;flex-shrink:0;margin-bottom:3px;"></div></div>`);
