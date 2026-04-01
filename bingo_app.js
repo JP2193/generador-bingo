@@ -506,17 +506,13 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
           <img src="${img4b64}" alt="flores">
         </div>
 
-        <div class="carton-titulo">
-          <span class="titulo-principal">Encontrá al invitado que...</span>
-        </div>
-
         <div class="nombre-field">
           <span class="nombre-label">Tu nombre:</span>
           <span class="nombre-linea"></span>
         </div>
 
-        <div class="grid">
-          ${buildCartonSVG(frases, img5b64)}
+        <div class="carton-titulo">
+          <span class="titulo-principal">Encontrá al invitado que...</span>
         </div>
 
         <div class="floral-corner floral-left">
@@ -524,6 +520,10 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
         </div>
         <div class="floral-corner floral-right">
           <img src="${img6b64}" alt="">
+        </div>
+
+        <div class="grid">
+          ${buildCartonSVG(frases, img5b64)}
         </div>
 
       </div>
@@ -629,7 +629,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
     .nombre-label {
       font-family: 'Jost', sans-serif;
       font-size: 11.5pt;
-      font-weight: 400;
+      font-weight: 600;
       color: #3a2010;
       white-space: nowrap;
     }
@@ -650,6 +650,8 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       border-top: none;
       margin: 0 4mm;
       margin-bottom: 28mm;
+      position: relative;
+      z-index: 1;
     }
 
     .celda {
@@ -707,6 +709,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       width: 45mm;
       height: 26mm;
       line-height: 0;
+      z-index: 0;
     }
 
     .floral-left { left: 0; }
@@ -842,21 +845,21 @@ function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
       <div style="width:100%;flex-shrink:0;overflow:hidden;line-height:0;">
         <img src="${img4b64}" style="width:100%;display:block;object-fit:cover;object-position:top center;max-height:${floralH}px;filter:contrast(1.15) saturate(1.1);">
       </div>
+      <div style="display:flex;align-items:flex-end;padding:0 14px 8px;gap:6px;flex-shrink:0;max-width:58%;">
+        <span style="font-family:'Jost',sans-serif;font-size:11pt;font-weight:600;color:#3a2010;white-space:nowrap;">Tu nombre:</span>
+        <span style="flex:1;border-bottom:0.8px solid #3d2b1f;display:inline-block;height:16px;min-width:60px;"></span>
+      </div>
       <div style="display:flex;flex-direction:column;align-items:center;padding:8px 8px 18px;flex-shrink:0;">
         <span style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24pt;color:#6b4410;text-align:center;max-width:80%;line-height:1.1;">Encontrá al invitado que...</span>
       </div>
-      <div style="display:flex;align-items:flex-end;padding:0 14px 8px;gap:6px;flex-shrink:0;max-width:58%;">
-        <span style="font-family:'Jost',sans-serif;font-size:11pt;color:#3a2010;white-space:nowrap;">Tu nombre:</span>
-        <span style="flex:1;border-bottom:0.8px solid #3d2b1f;display:inline-block;height:16px;min-width:60px;"></span>
+      <div style="position:absolute;bottom:0;left:0;width:${cornerW}px;height:${cornerH}px;overflow:hidden;z-index:0;">
+        <img src="${img6b64}" style="width:150%;height:auto;display:block;">
       </div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);flex:1;background:transparent;gap:0;margin:0 8px ${gridMarginB}px;">
+      <div style="position:absolute;bottom:0;right:0;width:${cornerW}px;height:${cornerH}px;overflow:hidden;transform:scaleX(-1);z-index:0;">
+        <img src="${img6b64}" style="width:150%;height:auto;display:block;">
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);flex:1;background:transparent;gap:0;margin:0 8px ${gridMarginB}px;position:relative;z-index:1;">
         ${buildCellsInline(frases, img5b64)}
-      </div>
-      <div style="position:absolute;bottom:0;left:0;width:${cornerW}px;height:${cornerH}px;overflow:hidden;">
-        <img src="${img6b64}" style="width:150%;height:auto;display:block;">
-      </div>
-      <div style="position:absolute;bottom:0;right:0;width:${cornerW}px;height:${cornerH}px;overflow:hidden;transform:scaleX(-1);">
-        <img src="${img6b64}" style="width:150%;height:auto;display:block;">
       </div>
     </div>`).join('');
 
