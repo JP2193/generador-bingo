@@ -649,6 +649,8 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       border-top: 1px solid #dfd0b9;
       margin: 0 4mm;
       margin-bottom: 28mm;
+      border-radius: 4mm;
+      overflow: hidden;
     }
 
     .celda {
