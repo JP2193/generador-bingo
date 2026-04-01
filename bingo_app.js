@@ -684,6 +684,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       color: #5c4838;
       line-height: 1.25;
       word-break: break-word;
+      hyphens: auto;
       max-width: 80%;
       padding-top: 1mm;
     }
