@@ -648,7 +648,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       background: transparent;
       gap: 1mm;
       border-top: none;
-      margin: 0 4mm;
+      margin: 5px 4mm 28mm;
       position: relative;
       z-index: 1;
     }
@@ -858,7 +858,7 @@ function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
       <div style="position:absolute;bottom:0;right:0;width:${cornerW}px;height:${cornerH}px;overflow:hidden;transform:scaleX(-1);z-index:0;">
         <img src="${img6b64}" style="width:150%;height:auto;display:block;">
       </div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);flex:1;background:transparent;gap:0;margin:0 8px;position:relative;z-index:1;">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);flex:1;background:transparent;gap:0;margin:5px 8px ${gridMarginB}px;position:relative;z-index:1;">
         ${buildCellsInline(frases, img5b64)}
       </div>
     </div>`).join('');
