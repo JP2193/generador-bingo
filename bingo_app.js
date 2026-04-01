@@ -602,7 +602,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 3mm 4mm 9mm;
+      padding: 3mm 4mm 14mm;
       flex-shrink: 0;
     }
 
@@ -620,7 +620,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
     .nombre-field {
       display: flex;
       align-items: baseline;
-      padding: 4mm 5mm 3mm;
+      padding: 8mm 5mm 6mm;
       gap: 2mm;
       flex-shrink: 0;
       max-width: 58%;
@@ -846,11 +846,11 @@ function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
       <div style="width:100%;flex-shrink:0;overflow:hidden;line-height:0;">
         <img src="${img4b64}" style="width:100%;display:block;object-fit:cover;object-position:top center;max-height:${floralH}px;filter:contrast(1.15) saturate(1.1);">
       </div>
-      <div style="display:flex;align-items:flex-end;padding:0 14px 8px;gap:6px;flex-shrink:0;max-width:58%;">
+      <div style="display:flex;align-items:flex-end;padding:22px 14px 16px;gap:6px;flex-shrink:0;max-width:58%;">
         <span style="font-family:'Jost',sans-serif;font-size:13pt;font-weight:600;color:#3a2010;white-space:nowrap;">Tu nombre:</span>
         <span style="flex:1;border-bottom:0.8px solid #3d2b1f;display:inline-block;height:16px;min-width:60px;"></span>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 8px 18px;flex-shrink:0;">
+      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 8px 32px;flex-shrink:0;">
         <span style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24pt;color:#6b4410;text-align:center;max-width:80%;line-height:1.1;">Encontrá al invitado que...</span>
       </div>
       <div style="position:absolute;bottom:0;left:0;width:${cornerW}px;height:${cornerH}px;overflow:hidden;z-index:0;">
