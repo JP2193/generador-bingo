@@ -628,7 +628,7 @@ function buildCartonHTML(sets, img4b64, img6b64) {
       background: transparent;
       gap: 1mm;
       border-top: none;
-      margin: 3px 8mm 13mm;
+      margin: 3px 9mm 13mm;
       position: relative;
       z-index: 1;
     }
@@ -664,7 +664,7 @@ function buildCartonHTML(sets, img4b64, img6b64) {
     .frase-txt {
       font-family: 'Jost', sans-serif;
       font-weight: 500;
-      font-size: 14pt;
+      font-size: 15pt;
       color: #3a2010;
       line-height: 1.25;
       overflow-wrap: break-word;
@@ -802,7 +802,7 @@ function buildCellsInline(frases) {
   const cells = [];
   for (let i = 0; i < 20; i++) {
     const frase = escapeHtml(frases[i] || '');
-    cells.push(`<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 4px 3px;text-align:center;background:#fdfaf5;border:0.5px solid rgba(140,100,60,0.75);border-radius:9px;overflow:hidden;margin:2px;"><span style="font-family:'Jost',sans-serif;font-weight:500;font-size:14pt;color:#3a2010;line-height:1.25;overflow-wrap:break-word;hyphens:auto;hyphenate-limit-chars:11 4 4;max-width:80%;padding-top:2px;">${frase}</span><div style="width:75%;border-bottom:0.7px solid #8a6830;margin-top:auto;flex-shrink:0;margin-bottom:3px;"></div></div>`);
+    cells.push(`<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 4px 3px;text-align:center;background:#fdfaf5;border:0.5px solid rgba(140,100,60,0.75);border-radius:9px;overflow:hidden;margin:2px;"><span style="font-family:'Jost',sans-serif;font-weight:500;font-size:15pt;color:#3a2010;line-height:1.25;overflow-wrap:break-word;hyphens:auto;hyphenate-limit-chars:11 4 4;max-width:80%;padding-top:2px;">${frase}</span><div style="width:75%;border-bottom:0.7px solid #8a6830;margin-top:auto;flex-shrink:0;margin-bottom:3px;"></div></div>`);
   }
   return cells.join('');
 }
@@ -833,7 +833,7 @@ function buildSheetDOM(grupo, img4b64, img6b64) {
       <div style="position:absolute;bottom:0;right:0;width:${cornerW}px;height:${cornerH}px;overflow:hidden;transform:scaleX(-1);z-index:0;">
         <img src="${img6b64}" style="width:150%;height:auto;display:block;">
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(5,1fr);flex:1;background:transparent;gap:0;margin:3px 30px ${Math.round(cornerH / 2)}px;position:relative;z-index:1;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(5,1fr);flex:1;background:transparent;gap:0;margin:3px 34px ${Math.round(cornerH / 2)}px;position:relative;z-index:1;">
         ${buildCellsInline(frases)}
       </div>
     </div>`).join('');
