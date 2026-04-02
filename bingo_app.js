@@ -507,7 +507,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
         </div>
 
         <div class="nombre-field">
-          <span class="nombre-label">Tu nombre:</span>
+          <span class="nombre-label">Nombre:</span>
           <span class="nombre-linea"></span>
         </div>
 
@@ -624,7 +624,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
       padding: 8mm 5mm 6mm;
       gap: 2mm;
       flex-shrink: 0;
-      max-width: 58%;
+      width: 100%;
     }
 
     .nombre-label {
@@ -847,8 +847,8 @@ function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
       <div style="width:100%;flex-shrink:0;overflow:hidden;line-height:0;">
         <img src="${img4b64}" style="width:100%;display:block;object-fit:cover;object-position:top center;max-height:${floralH}px;filter:contrast(1.15) saturate(1.1);">
       </div>
-      <div style="display:flex;align-items:flex-end;padding:22px 14px 16px;gap:6px;flex-shrink:0;max-width:58%;">
-        <span style="font-family:'Jost',sans-serif;font-size:13.5pt;font-weight:600;color:#3a2010;white-space:nowrap;">Tu nombre:</span>
+      <div style="display:flex;align-items:flex-end;padding:22px 14px 16px;gap:6px;flex-shrink:0;width:100%;">
+        <span style="font-family:'Jost',sans-serif;font-size:13.5pt;font-weight:600;color:#3a2010;white-space:nowrap;">Nombre:</span>
         <span style="flex:1;border-bottom:0.8px solid #3d2b1f;display:inline-block;height:16px;min-width:60px;"></span>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;padding:18px 8px 42px;flex-shrink:0;">
