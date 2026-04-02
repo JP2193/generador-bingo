@@ -600,7 +600,7 @@ function buildCartonHTML(sets, img4b64, img6b64) {
     .nombre-field {
       display: flex;
       align-items: baseline;
-      padding: 8mm 5mm 6mm;
+      padding: 8mm 9mm 6mm;
       gap: 2mm;
       flex-shrink: 0;
       width: 100%;
@@ -820,7 +820,7 @@ function buildSheetDOM(grupo, img4b64, img6b64) {
       <div style="width:100%;flex-shrink:0;overflow:hidden;line-height:0;">
         <img src="${img4b64}" style="width:100%;display:block;object-fit:cover;object-position:top center;max-height:${floralH}px;filter:contrast(1.15) saturate(1.1);">
       </div>
-      <div style="display:flex;align-items:flex-end;padding:22px 14px 16px;gap:6px;flex-shrink:0;width:100%;">
+      <div style="display:flex;align-items:flex-end;padding:22px 34px 16px;gap:6px;flex-shrink:0;width:100%;">
         <span style="font-family:'Jost',sans-serif;font-size:13.5pt;font-weight:400;color:#6b4410;white-space:nowrap;">Nombre:</span>
         <span style="flex:1;border-bottom:1px dotted #6b4410;display:inline-block;height:16px;min-width:60px;"></span>
       </div>
