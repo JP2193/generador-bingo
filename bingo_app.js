@@ -448,7 +448,7 @@ function generarHTML() {
   // Convertir imagen a base64 para embeber en el HTML
   Promise.all([
     imgToBase64('img/4.png'),
-    imgToBase64('img/5.png'),
+    imgToBase64('img/7.svg'),
     imgToBase64('img/6.png'),
   ]).then(([img4b64, img5b64, img6b64]) => {
     const htmlContent = buildCartonHTML(sets, img4b64, img5b64, img6b64);
@@ -762,7 +762,7 @@ async function generarLoteHTML() {
   try {
     imgs = await Promise.all([
       imgToBase64('img/4.png'),
-      imgToBase64('img/5.png'),
+      imgToBase64('img/7.svg'),
       imgToBase64('img/6.png'),
     ]);
   } catch(err) {
