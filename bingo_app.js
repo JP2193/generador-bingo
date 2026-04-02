@@ -637,7 +637,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
 
     .nombre-linea {
       flex: 1;
-      border-bottom: 1px dotted #a8917a;
+      border-bottom: 1px dotted #6b4410;
       min-width: 30mm;
     }
 
@@ -849,7 +849,7 @@ function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
       </div>
       <div style="display:flex;align-items:flex-end;padding:22px 14px 16px;gap:6px;flex-shrink:0;width:100%;">
         <span style="font-family:'Jost',sans-serif;font-size:13.5pt;font-weight:600;color:#3a2010;white-space:nowrap;">Nombre:</span>
-        <span style="flex:1;border-bottom:1px dotted #a8917a;display:inline-block;height:16px;min-width:60px;"></span>
+        <span style="flex:1;border-bottom:1px dotted #6b4410;display:inline-block;height:16px;min-width:60px;"></span>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;padding:18px 8px 42px;flex-shrink:0;">
         <span style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:26pt;color:#6b4410;text-align:center;max-width:80%;line-height:1.1;margin:1px 0;display:block;">Encontrá al invitado que...</span>
