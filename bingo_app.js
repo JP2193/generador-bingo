@@ -279,17 +279,11 @@ function buildCalibGrid() {
   const g = document.getElementById('calibGrid');
   g.innerHTML = '';
   let fi = 0;
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 20; i++) {
     const cell = document.createElement('div');
-    if (i === 12) {
-      cell.className = 'calib-cell centro';
-      cell.textContent = '💍';
-    } else {
-      cell.className = 'calib-cell';
-      cell.style.fontSize = calib.font + 'px';
-      cell.textContent = frasesDemo[fi] || '';
-      fi++;
-    }
+    cell.className = 'calib-cell';
+    cell.style.fontSize = calib.font + 'px';
+    cell.textContent = frasesDemo[fi++] || '';
     g.appendChild(cell);
   }
 }
@@ -372,7 +366,7 @@ function generarFrases() {
   const nD = parseInt(document.getElementById('nDificil').value) || 0;
   const total = nF + nM + nD;
 
-  if (total !== 24) { showError(`La distribución suma ${total}, necesitás exactamente 24.`); return null; }
+  if (total !== 20) { showError(`La distribución suma ${total}, necesitás exactamente 20.`); return null; }
   if (faciles.length   < nF) { showError(`Necesitás ${nF} frases fáciles, tenés ${faciles.length}.`);   return null; }
   if (medias.length    < nM) { showError(`Necesitás ${nM} frases medias, tenés ${medias.length}.`);     return null; }
   if (dificiles.length < nD) { showError(`Necesitás ${nD} frases difíciles, tenés ${dificiles.length}.`); return null; }
@@ -394,20 +388,11 @@ function buildGrid(todas) {
   applyGridColor();
 
   let fi = 0;
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 20; i++) {
     const cell = document.createElement('div');
-    if (i === 12) {
-      cell.className = 'grid-cell centro';
-      const img = document.createElement('img');
-      img.src = 'img/1.png';
-      img.alt = 'anillos';
-      img.onerror = () => { img.style.display='none'; cell.textContent='💍'; };
-      cell.appendChild(img);
-    } else {
-      cell.className = 'grid-cell';
-      cell.style.fontSize = calib.font + 'px';
-      cell.textContent = todas[fi++] || '';
-    }
+    cell.className = 'grid-cell';
+    cell.style.fontSize = calib.font + 'px';
+    cell.textContent = todas[fi++] || '';
     o.appendChild(cell);
   }
 }
@@ -448,10 +433,9 @@ function generarHTML() {
   // Convertir imagen a base64 para embeber en el HTML
   Promise.all([
     imgToBase64('img/4.png'),
-    imgToBase64('img/7.svg'),
     imgToBase64('img/6.png'),
-  ]).then(([img4b64, img5b64, img6b64]) => {
-    const htmlContent = buildCartonHTML(sets, img4b64, img5b64, img6b64);
+  ]).then(([img4b64, img6b64]) => {
+    const htmlContent = buildCartonHTML(sets, img4b64, img6b64);
     const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -479,16 +463,11 @@ function imgToBase64(src) {
   });
 }
 
-function buildCartonSVG(frases, img5b64) {
+function buildCartonSVG(frases) {
   const cells = [];
-  let fi = 0;
-  for (let i = 0; i < 25; i++) {
-    if (i === 12) {
-      cells.push(`<div class="celda centro"><img src="${img5b64}" alt="centro"></div>`);
-    } else {
-      const frase = frases[fi++] || '';
-      cells.push(`<div class="celda"><span class="frase-txt">${escapeHtml(frase)}</span><div class="firma-linea"></div></div>`);
-    }
+  for (let i = 0; i < 20; i++) {
+    const frase = frases[i] || '';
+    cells.push(`<div class="celda"><span class="frase-txt">${escapeHtml(frase)}</span><div class="firma-linea"></div></div>`);
   }
   return cells.join('\n');
 }
@@ -497,7 +476,7 @@ function escapeHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
+function buildCartonHTML(sets, img4b64, img6b64) {
   const cartones = sets.map((frases) => `
     <div class="carton-page">
       <div class="carton-wrap">
@@ -523,7 +502,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
         </div>
 
         <div class="grid">
-          ${buildCartonSVG(frases, img5b64)}
+          ${buildCartonSVG(frases)}
         </div>
 
       </div>
@@ -643,7 +622,7 @@ function buildCartonHTML(sets, img4b64, img5b64, img6b64) {
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       grid-template-rows: repeat(5, 1fr);
       flex: 1;
       background: transparent;
@@ -762,7 +741,6 @@ async function generarLoteHTML() {
   try {
     imgs = await Promise.all([
       imgToBase64('img/4.png'),
-      imgToBase64('img/7.svg'),
       imgToBase64('img/6.png'),
     ]);
   } catch(err) {
@@ -770,7 +748,7 @@ async function generarLoteHTML() {
     progress.style.display = 'none';
     return;
   }
-  const [img4b64, img5b64, img6b64] = imgs;
+  const [img4b64, img6b64] = imgs;
 
   // Generar todos los sets de frases
   const allSets = [];
@@ -794,7 +772,7 @@ async function generarLoteHTML() {
     const grupo = allSets.slice(s * 4, s * 4 + 4);
     while (grupo.length < 4) grupo.push(grupo[0]);
 
-    tmp.innerHTML = buildSheetDOM(grupo, img4b64, img5b64, img6b64);
+    tmp.innerHTML = buildSheetDOM(grupo, img4b64, img6b64);
     await new Promise(r => setTimeout(r, 80));
 
     const canvas = await html2canvas(tmp.firstChild, {
@@ -820,21 +798,16 @@ async function generarLoteHTML() {
   setTimeout(() => { progress.style.display = 'none'; }, 3500);
 }
 
-function buildCellsInline(frases, img5b64) {
-  let fi = 0;
+function buildCellsInline(frases) {
   const cells = [];
-  for (let i = 0; i < 25; i++) {
-    if (i === 12) {
-      cells.push(`<div style="display:flex;align-items:center;justify-content:center;padding:4px;background:#fdfaf5;border:none;border-radius:9px;overflow:hidden;margin:2px;"><img src="${img5b64}" style="max-width:70%;max-height:70%;width:auto;height:auto;display:block;filter:contrast(1.15) saturate(1.1);"></div>`);
-    } else {
-      const frase = escapeHtml(frases[fi++] || '');
-      cells.push(`<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 4px 3px;text-align:center;background:#fdfaf5;border:0.5px solid rgba(140,100,60,0.75);border-radius:9px;overflow:hidden;margin:2px;"><span style="font-family:'Jost',sans-serif;font-weight:500;font-size:14pt;color:#3a2010;line-height:1.25;overflow-wrap:break-word;hyphens:auto;hyphenate-limit-chars:11 4 4;max-width:80%;padding-top:2px;">${frase}</span><div style="width:75%;border-bottom:0.7px solid #8a6830;margin-top:auto;flex-shrink:0;margin-bottom:3px;"></div></div>`);
-    }
+  for (let i = 0; i < 20; i++) {
+    const frase = escapeHtml(frases[i] || '');
+    cells.push(`<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 4px 3px;text-align:center;background:#fdfaf5;border:0.5px solid rgba(140,100,60,0.75);border-radius:9px;overflow:hidden;margin:2px;"><span style="font-family:'Jost',sans-serif;font-weight:500;font-size:14pt;color:#3a2010;line-height:1.25;overflow-wrap:break-word;hyphens:auto;hyphenate-limit-chars:11 4 4;max-width:80%;padding-top:2px;">${frase}</span><div style="width:75%;border-bottom:0.7px solid #8a6830;margin-top:auto;flex-shrink:0;margin-bottom:3px;"></div></div>`);
   }
   return cells.join('');
 }
 
-function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
+function buildSheetDOM(grupo, img4b64, img6b64) {
   const cW = SHEET_W / 2;
   const cH = SHEET_H / 2;
   const cornerW = Math.round(cW * 0.19);
@@ -860,8 +833,8 @@ function buildSheetDOM(grupo, img4b64, img5b64, img6b64) {
       <div style="position:absolute;bottom:0;right:0;width:${cornerW}px;height:${cornerH}px;overflow:hidden;transform:scaleX(-1);z-index:0;">
         <img src="${img6b64}" style="width:150%;height:auto;display:block;">
       </div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);flex:1;background:transparent;gap:0;margin:3px 8px ${Math.round(cornerH / 2)}px;position:relative;z-index:1;">
-        ${buildCellsInline(frases, img5b64)}
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(5,1fr);flex:1;background:transparent;gap:0;margin:3px 8px ${Math.round(cornerH / 2)}px;position:relative;z-index:1;">
+        ${buildCellsInline(frases)}
       </div>
     </div>`).join('');
 
